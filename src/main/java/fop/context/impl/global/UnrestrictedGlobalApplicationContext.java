@@ -3,6 +3,7 @@ package fop.context.impl.global;
 import java.util.Set;
 
 import fop.context.ApplicationContext;
+import fop.context.ApplicationContextKey;
 import fop.context.ApplicationContextMergeStrategy;
 import fop.context.GlobalApplicationContext;
 import fop.context.UnrestrictedApplicationContext;
@@ -16,7 +17,7 @@ public class UnrestrictedGlobalApplicationContext extends AbstractConcurrentAppl
     }
     
     @Override
-    public void validateKey(String key)
+    public void validateKey(ApplicationContextKey<?> key)
     {
         //unrestricted
     }
@@ -53,11 +54,12 @@ public class UnrestrictedGlobalApplicationContext extends AbstractConcurrentAppl
         
     }
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void doMerge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
-        Set<String> keysOther = other.keySet();
+        Set<ApplicationContextKey<?>> keysOther = other.keySet();
         
-        for(String keyOther: keysOther)
+        for(ApplicationContextKey keyOther: keysOther)
         {
             Object newValue = other.fetch(keyOther);
             

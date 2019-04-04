@@ -1,5 +1,6 @@
 package fop.context.impl;
 
+import fop.context.ApplicationContextKey;
 import fop.context.ConcurrentApplicationContext;
 
 public abstract class AbstractConcurrentApplicationContext extends AbstractApplicationContext implements ConcurrentApplicationContext
@@ -13,7 +14,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
     
     @Override
-    public void addIfNotPresent(String key, Object value) 
+    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value)
     {
         getContextConcurrencyManager().acquireWriteLock();
         
@@ -28,7 +29,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
     
     @Override
-    public void addIfNotPresent(String key, Object value, int timeout) 
+    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value, int timeout) 
     {
         getContextConcurrencyManager().acquireWriteLock(timeout);
         
@@ -43,7 +44,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public Object addWithOverwrite(String key, Object value) 
+    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value) 
     {
         getContextConcurrencyManager().acquireWriteLock();
         
@@ -58,7 +59,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public Object addWithOverwrite(String key, Object value, int timeout) 
+    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value, int timeout) 
     {
         getContextConcurrencyManager().acquireWriteLock(timeout);
         
@@ -73,7 +74,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public void add(String key, Object value) 
+    public <T> void add(ApplicationContextKey<T> key, T value)
     {
         getContextConcurrencyManager().acquireWriteLock();
         
@@ -88,7 +89,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public void add(String key, Object value, int timeout) 
+    public <T> void add(ApplicationContextKey<T> key, T value, int timeout) 
     {
         getContextConcurrencyManager().acquireWriteLock(timeout);
         
@@ -103,7 +104,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public boolean exists(String key) 
+    public <T> boolean exists(ApplicationContextKey<T> key) 
     {
         getContextConcurrencyManager().acquireReadLock();
         
@@ -118,7 +119,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public boolean exists(String key, int timeout) 
+    public <T> boolean exists(ApplicationContextKey<T> key, int timeout) 
     {
         getContextConcurrencyManager().acquireReadLock(timeout);
         
@@ -133,7 +134,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public Object fetch(String key) 
+    public <T> T fetch(ApplicationContextKey<T> key) 
     {
         getContextConcurrencyManager().acquireReadLock();
         
@@ -148,7 +149,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public Object fetch(String key, int timeout) 
+    public <T> T fetch(ApplicationContextKey<T> key, int timeout) 
     {
         getContextConcurrencyManager().acquireReadLock(timeout);
         
@@ -163,7 +164,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
 
     @Override
-    public Object erase(String key) 
+    public <T> T erase(ApplicationContextKey<T> key) 
     {
         getContextConcurrencyManager().acquireWriteLock();
         
@@ -178,7 +179,7 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
     }
     
     @Override
-    public Object erase(String key, int timeout) 
+    public <T> T erase(ApplicationContextKey<T> key, int timeout) 
     {
         getContextConcurrencyManager().acquireWriteLock(timeout);
         

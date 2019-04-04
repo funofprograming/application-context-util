@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fop.context.ApplicationContext;
+import fop.context.ApplicationContextKey;
 import fop.context.ApplicationContextMergeStrategy;
 import fop.context.LocalApplicationContext;
 import fop.context.RestrictedApplicationContext;
@@ -14,15 +15,15 @@ import fop.context.impl.InvalidKeyException;
 
 public class RestrictedLocalApplicationContext extends AbstractApplicationContext implements LocalApplicationContext, RestrictedApplicationContext
 {
-    private final Set<String> keys;
+    private final Set<ApplicationContextKey<?>> keys;
     
-    public RestrictedLocalApplicationContext(String name, Set<String> keys) 
+    public RestrictedLocalApplicationContext(String name, Set<ApplicationContextKey<?>> keys) 
     {
         super(name);
         
         if(keys != null && !keys.isEmpty())
         {
-            Set<String> keysTemp = new HashSet<>(keys);
+            Set<ApplicationContextKey<?>> keysTemp = new HashSet<>(keys);
             this.keys = Collections.unmodifiableSet(keysTemp);
         }
         else
@@ -32,7 +33,7 @@ public class RestrictedLocalApplicationContext extends AbstractApplicationContex
     }
 
     @Override
-    public void validateKey(String key)
+    public void validateKey(ApplicationContextKey<?> key)
     {
         if(!getPermittedKeys().contains(key))
         {
@@ -41,13 +42,13 @@ public class RestrictedLocalApplicationContext extends AbstractApplicationContex
     }
 
     @Override
-    public Set<String> getPermittedKeys() 
+    public Set<ApplicationContextKey<?>> getPermittedKeys() 
     {
         return this.keys;
     }
     
     @Override
-    public boolean isKeyValid(String key)
+    public boolean isKeyValid(ApplicationContextKey<?> key)
     {
         return getPermittedKeys().contains(key);
     }

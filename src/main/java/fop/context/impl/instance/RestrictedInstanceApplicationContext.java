@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fop.context.ApplicationContext;
+import fop.context.ApplicationContextKey;
 import fop.context.ApplicationContextMergeStrategy;
 import fop.context.ConcurrentApplicationContext;
 import fop.context.InstanceApplicationContext;
@@ -14,15 +15,15 @@ import fop.context.impl.InvalidKeyException;
 
 public class RestrictedInstanceApplicationContext extends AbstractConcurrentApplicationContext implements InstanceApplicationContext, ConcurrentApplicationContext, RestrictedApplicationContext
 {
-    private final Set<String> keys;
+    private final Set<ApplicationContextKey<?>> keys;
     
-    public RestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds, Set<String> keys) 
+    public RestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> keys) 
     {
         super(name, concurrentWriteTimeoutSeconds);
         
         if(keys != null && !keys.isEmpty())
         {
-            Set<String> keysTemp = new HashSet<>(keys);
+            Set<ApplicationContextKey<?>> keysTemp = new HashSet<>(keys);
             this.keys = Collections.unmodifiableSet(keysTemp);
         }
         else
@@ -32,7 +33,7 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
     }
 
     @Override
-    public void validateKey(String key)
+    public void validateKey(ApplicationContextKey<?> key)
     {
         if(!getPermittedKeys().contains(key))
         {
@@ -41,13 +42,13 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
     }
 
     @Override
-    public Set<String> getPermittedKeys() 
+    public Set<ApplicationContextKey<?>> getPermittedKeys() 
     {
         return this.keys;
     }
     
     @Override
-    public boolean isKeyValid(String key)
+    public boolean isKeyValid(ApplicationContextKey<?> key)
     {
         return getPermittedKeys().contains(key);
     }
@@ -84,11 +85,12 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
         
     }
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void doMerge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
-        Set<String> keysOther = other.keySet();
+        Set<ApplicationContextKey<?>> keysOther = other.keySet();
         
-        for(String keyOther: keysOther)
+        for(ApplicationContextKey keyOther: keysOther)
         {
             if(!isKeyValid(keyOther))
             {

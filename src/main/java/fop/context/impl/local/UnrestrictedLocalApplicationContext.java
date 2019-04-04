@@ -1,6 +1,7 @@
 package fop.context.impl.local;
 
 import fop.context.ApplicationContext;
+import fop.context.ApplicationContextKey;
 import fop.context.ApplicationContextMergeStrategy;
 import fop.context.LocalApplicationContext;
 import fop.context.UnrestrictedApplicationContext;
@@ -15,7 +16,7 @@ public class UnrestrictedLocalApplicationContext extends AbstractApplicationCont
     }
 
     @Override
-    public void validateKey(String key) 
+    public void validateKey(ApplicationContextKey<?> key) 
     {
         //unrestricted
     }

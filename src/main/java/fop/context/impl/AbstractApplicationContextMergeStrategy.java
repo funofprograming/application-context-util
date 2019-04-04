@@ -3,6 +3,7 @@ package fop.context.impl;
 import java.util.Objects;
 import java.util.Set;
 
+import fop.context.ApplicationContextKey;
 import fop.context.ApplicationContextMergeStrategy;
 
 public abstract class AbstractApplicationContextMergeStrategy implements ApplicationContextMergeStrategy {
@@ -20,7 +21,7 @@ public abstract class AbstractApplicationContextMergeStrategy implements Applica
         return Objects.nonNull(keys);
     }
     
-    protected boolean keyAvailable(String key)
+    protected boolean keyAvailable(ApplicationContextKey<?> key)
     {
         return keySetAvailable()?keys.contains(key):false;
     }
