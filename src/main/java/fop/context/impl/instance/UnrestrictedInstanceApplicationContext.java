@@ -12,7 +12,7 @@ import fop.context.impl.AbstractConcurrentApplicationContext;
 
 public class UnrestrictedInstanceApplicationContext extends AbstractConcurrentApplicationContext implements InstanceApplicationContext, ConcurrentApplicationContext, UnrestrictedApplicationContext
 {
-    public UnrestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds)
+    UnrestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds)
     {
         super(name, concurrentWriteTimeoutSeconds);
     }

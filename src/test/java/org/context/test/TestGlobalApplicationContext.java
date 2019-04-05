@@ -11,6 +11,7 @@ import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Test;
 
+import fop.context.ApplicationContextKey;
 import fop.context.GlobalApplicationContext;
 import fop.context.impl.InvalidKeyException;
 import fop.context.util.ContextUtil;
@@ -25,15 +26,15 @@ public class TestGlobalApplicationContext
     public void testUnrestrictedGlobalApplicationContext() throws InterruptedException, ExecutionException 
     {
         
-        final String key1 = "key1";
-        final String key2 = "key2";
-        final String key3 = "key3";
+        final ApplicationContextKey<String> key1 = ApplicationContextKey.of("key1", String.class);
+        final ApplicationContextKey<String> key2 = ApplicationContextKey.of("key2", String.class);
+        final ApplicationContextKey<String> key3 = ApplicationContextKey.of("key3", String.class);
         final String val1 = "val1";
         final String val3 = "val3";
                 
         
         String globalContextName = "testUnrestrictedGlobalApplicationContext";
-        Set<String> permittedKeys = new HashSet<>();
+        Set<ApplicationContextKey<?>> permittedKeys = new HashSet<>();
         permittedKeys.add(key1);
         permittedKeys.add(key2);
         
@@ -95,15 +96,15 @@ public class TestGlobalApplicationContext
     public void testRestrictedGlobalApplicationContext() throws InterruptedException, ExecutionException 
     {
         
-        final String key1 = "key1";
-        final String key2 = "key2";
-        final String key3 = "key3";
+        final ApplicationContextKey<String> key1 = ApplicationContextKey.of("key1", String.class);
+        final ApplicationContextKey<String> key2 = ApplicationContextKey.of("key2", String.class);
+        final ApplicationContextKey<String> key3 = ApplicationContextKey.of("key3", String.class);
         final String val1 = "val1";
         final String val3 = "val3";
                 
         
         String globalContextName = "testRestrictedGlobalApplicationContext";
-        Set<String> permittedKeys = new HashSet<>();
+        Set<ApplicationContextKey<?>> permittedKeys = new HashSet<>();
         permittedKeys.add(key1);
         permittedKeys.add(key2);
         

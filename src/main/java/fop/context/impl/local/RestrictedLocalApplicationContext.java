@@ -17,7 +17,7 @@ public class RestrictedLocalApplicationContext extends AbstractApplicationContex
 {
     private final Set<ApplicationContextKey<?>> keys;
     
-    public RestrictedLocalApplicationContext(String name, Set<ApplicationContextKey<?>> keys) 
+    RestrictedLocalApplicationContext(String name, Set<ApplicationContextKey<?>> keys) 
     {
         super(name);
         

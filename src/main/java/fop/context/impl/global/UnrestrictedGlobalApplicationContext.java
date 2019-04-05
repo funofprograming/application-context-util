@@ -11,7 +11,7 @@ import fop.context.impl.AbstractConcurrentApplicationContext;
 
 public class UnrestrictedGlobalApplicationContext extends AbstractConcurrentApplicationContext implements GlobalApplicationContext, UnrestrictedApplicationContext
 {
-    public UnrestrictedGlobalApplicationContext(String name, Integer concurrentWriteTimeoutSeconds)
+    UnrestrictedGlobalApplicationContext(String name, Integer concurrentWriteTimeoutSeconds)
     {
         super(name, concurrentWriteTimeoutSeconds);
     }

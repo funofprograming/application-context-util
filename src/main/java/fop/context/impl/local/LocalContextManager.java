@@ -1,16 +1,15 @@
-package fop.context.util;
+package fop.context.impl.local;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import fop.context.ApplicationContextKey;
 import fop.context.LocalApplicationContext;
 import fop.context.RestrictedApplicationContext;
 import fop.context.ApplicationContextTypes.Gate;
 import fop.context.impl.InvalidContextException;
-import fop.context.impl.local.RestrictedLocalApplicationContext;
-import fop.context.impl.local.UnrestrictedLocalApplicationContext;
 
 /**
  * LocalContextManager instantiates and manages context on each Thread level environment
@@ -49,7 +48,7 @@ public class LocalContextManager
         return localContext;
     }
     
-    public static LocalApplicationContext getRestrictedLocalContext(String name, Set<String> permittedKeys) 
+    public static LocalApplicationContext getRestrictedLocalContext(String name, Set<ApplicationContextKey<?>> permittedKeys) 
     {
         LocalApplicationContext localContext = LOCAL_CONTEXT_STORE.get().get(name);
         if(localContext == null)
@@ -63,7 +62,7 @@ public class LocalContextManager
         }
         
         //in case this thread already created restricted context with same name but with different keys
-        Set<String> contextKeys = ((RestrictedApplicationContext)localContext).getPermittedKeys();
+        Set<ApplicationContextKey<?>> contextKeys = ((RestrictedApplicationContext)localContext).getPermittedKeys();
         if(permittedKeys != null && !permittedKeys.isEmpty() && !contextKeys.equals(permittedKeys))
         {
             throw new InvalidContextException("A restricted context exists with same name but different key set so cannot create requested one");

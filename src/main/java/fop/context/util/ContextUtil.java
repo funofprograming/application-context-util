@@ -2,9 +2,13 @@ package fop.context.util;
 
 import java.util.Set;
 
+import fop.context.ApplicationContextKey;
 import fop.context.GlobalApplicationContext;
 import fop.context.InstanceApplicationContext;
 import fop.context.LocalApplicationContext;
+import fop.context.impl.global.GlobalContextManager;
+import fop.context.impl.instance.InstanceContextManager;
+import fop.context.impl.local.LocalContextManager;
 
 public class ContextUtil {
 
@@ -21,12 +25,12 @@ public class ContextUtil {
         return GlobalContextManager.getUnrestrictedGlobalContext(name, defaultConcurrentWriteTimeoutSeconds);
     }
     
-    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Set<String> permittedKeys) 
+    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Set<ApplicationContextKey<?>> permittedKeys) 
     {
         return GlobalContextManager.getRestrictedGlobalContext(name, permittedKeys);
     }
     
-    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Integer defaultConcurrentWriteTimeoutSeconds, Set<String> permittedKeys) 
+    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Integer defaultConcurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> permittedKeys) 
     {
         return GlobalContextManager.getRestrictedGlobalContext(name, defaultConcurrentWriteTimeoutSeconds, permittedKeys);
     }
@@ -41,7 +45,7 @@ public class ContextUtil {
         return LocalContextManager.getUnrestrictedLocalContext(name);
     }
     
-    public static LocalApplicationContext getRestrictedLocalContext(String name, Set<String> permittedKeys) 
+    public static LocalApplicationContext getRestrictedLocalContext(String name, Set<ApplicationContextKey<?>> permittedKeys) 
     {
         return LocalContextManager.getRestrictedLocalContext(name, permittedKeys);
     }
@@ -51,7 +55,7 @@ public class ContextUtil {
         return InstanceContextManager.getUnrestrictedInstanceApplicationContext(name);
     }
     
-    public static InstanceApplicationContext getRestrictedInstanceApplicationContext(String name, Set<String> permittedKeys)
+    public static InstanceApplicationContext getRestrictedInstanceApplicationContext(String name, Set<ApplicationContextKey<?>> permittedKeys)
     {
     	return InstanceContextManager.getRestrictedInstanceApplicationContext(name, permittedKeys);
     }

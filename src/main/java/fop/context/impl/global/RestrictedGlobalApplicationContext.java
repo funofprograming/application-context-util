@@ -16,7 +16,7 @@ public class RestrictedGlobalApplicationContext extends AbstractConcurrentApplic
 {
     private final Set<ApplicationContextKey<?>> keys;
     
-    public RestrictedGlobalApplicationContext(String name, Integer concurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> keys) 
+    RestrictedGlobalApplicationContext(String name, Integer concurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> keys) 
     {
         super(name, concurrentWriteTimeoutSeconds);
         

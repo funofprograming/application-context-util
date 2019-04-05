@@ -17,7 +17,7 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
 {
     private final Set<ApplicationContextKey<?>> keys;
     
-    public RestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> keys) 
+    RestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> keys) 
     {
         super(name, concurrentWriteTimeoutSeconds);
         

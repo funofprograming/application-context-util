@@ -4,13 +4,15 @@ import java.io.Serializable;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
-@Data(staticConstructor = "of")
+@Data
+@RequiredArgsConstructor(staticName = "of")
 @EqualsAndHashCode(of = {"keyName"})
 public class ApplicationContextKey<T> implements Serializable
 {
     private static final long serialVersionUID = -1622914480860236052L;
     
-    private String keyName;
-    private Class<T> keyType;
+    private final String keyName;
+    private final Class<T> keyType;
 }

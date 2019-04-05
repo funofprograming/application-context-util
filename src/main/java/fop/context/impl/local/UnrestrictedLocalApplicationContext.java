@@ -10,7 +10,7 @@ import fop.context.impl.InvalidContextOperation;
 
 public class UnrestrictedLocalApplicationContext extends AbstractApplicationContext implements LocalApplicationContext, UnrestrictedApplicationContext
 {
-    public UnrestrictedLocalApplicationContext(String name) 
+    UnrestrictedLocalApplicationContext(String name) 
     {
         super(name);
     }

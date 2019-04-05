@@ -1,4 +1,4 @@
-package fop.context.util;
+package fop.context.impl.global;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,12 +7,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import fop.context.ApplicationContextKey;
 import fop.context.GlobalApplicationContext;
 import fop.context.RestrictedApplicationContext;
 import fop.context.ApplicationContextTypes.Gate;
 import fop.context.impl.InvalidContextException;
-import fop.context.impl.global.RestrictedGlobalApplicationContext;
-import fop.context.impl.global.UnrestrictedGlobalApplicationContext;
 
 /**
  * GlobalContextManager instantiates and manages context in global JVM level environment
@@ -46,12 +45,12 @@ public class GlobalContextManager
         return GLOBAL_CONTEXT_STORE.get(name);
     }
     
-    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Set<String> permittedKeys) 
+    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Set<ApplicationContextKey<?>> permittedKeys) 
     {
         return GlobalContextManager.getRestrictedGlobalContext(name, null, permittedKeys);
     }
     
-    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Integer defaultConcurrentWriteTimeoutSeconds, Set<String> permittedKeys) 
+    public static GlobalApplicationContext getRestrictedGlobalContext(String name, Integer defaultConcurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> permittedKeys) 
     {
         if(!GLOBAL_CONTEXT_STORE.containsKey(name))
         {
@@ -64,7 +63,7 @@ public class GlobalContextManager
         }
         
         //in case some other thread already created restricted context with same name but with different keys
-        Set<String> contextKeys = ((RestrictedApplicationContext)GLOBAL_CONTEXT_STORE.get(name)).getPermittedKeys();
+        Set<ApplicationContextKey<?>> contextKeys = ((RestrictedApplicationContext)GLOBAL_CONTEXT_STORE.get(name)).getPermittedKeys();
         if(permittedKeys != null && !permittedKeys.isEmpty() && !contextKeys.equals(permittedKeys))
         {
             throw new InvalidContextException("A restricted context exists with same name but different permitted key set so cannot create requested one");
