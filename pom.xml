@@ -1,26 +1,56 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>programing.fun</groupId>
-  <artifactId>application-context-util</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>Application Context Util</name>
-  <description>Utility to manage contexts in application</description>
-  
-  <properties>
-  	<java.version>1.11</java.version>
-  </properties>
-  
-  <build>
-	  <plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<version>2.3.2</version>
-			<configuration>
-				<source>${java.version}</source>
-				<target>${java.version}</target>
-			</configuration>
-		</plugin>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>programing.fun</groupId>
+	<artifactId>application-context-util</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Application Context Util</name>
+	<description>Utility to manage contexts in application</description>
+	<url>https://github.com/akshayjain7983/application-context-util</url>
+
+	<properties>
+		<java.version>11</java.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<release>${java.version}</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -31,12 +61,34 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.0</version>
-            <type>jar</type>
-            <scope>test</scope>
-            <optional>true</optional>
-        </dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.0</version>
+			<type>jar</type>
+			<scope>test</scope>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Akshay Jain</name>
+			<email>akshay.jain.7983@gmail.com</email>
+			<organization>Fun of Programing</organization>
+			<organizationUrl>http://funofprograming.wordpress.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/akshayjain7983/application-context-util.git</connection>
+		<developerConnection>scm:git:ssh://github.com:akshayjain7983/application-context-util.git</developerConnection>
+		<url>http://github.com/akshayjain7983/application-context-util/tree/master</url>
+	</scm>
 </project>
