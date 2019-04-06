@@ -7,7 +7,7 @@
   <description>Utility to manage contexts in application</description>
   
   <properties>
-  	<java.version>1.8</java.version>
+  	<java.version>1.11</java.version>
   </properties>
   
   <build>
