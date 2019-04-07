@@ -13,13 +13,26 @@ import fop.context.RestrictedApplicationContext;
 import fop.context.impl.AbstractConcurrentApplicationContext;
 import fop.context.impl.InvalidKeyException;
 
-public class RestrictedInstanceApplicationContext extends AbstractConcurrentApplicationContext implements InstanceApplicationContext, ConcurrentApplicationContext, RestrictedApplicationContext
+/**
+ * This is a {@linkplain ConcurrentApplicationContext} extension that implements {@linkplain InstanceApplicationContext} and {@linkplain RestrictedApplicationContext}
+ * 
+ * @author Akshay Jain
+ *
+ */
+public class RestrictedInstanceApplicationContext extends AbstractConcurrentApplicationContext implements InstanceApplicationContext, RestrictedApplicationContext
 {
     private final Set<ApplicationContextKey<?>> keys;
     
-    RestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds, Set<ApplicationContextKey<?>> keys) 
+    /**
+     * Initialize with name, default concurrent write timeout millis and set of permitted keys
+     * 
+     * @param name
+     * @param concurrentWriteTimeoutMilliseconds
+     * @param keys
+     */
+    RestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutMilliseconds, Set<ApplicationContextKey<?>> keys) 
     {
-        super(name, concurrentWriteTimeoutSeconds);
+        super(name, concurrentWriteTimeoutMilliseconds);
         
         if(keys != null && !keys.isEmpty())
         {
@@ -32,6 +45,9 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
         }
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void validateKey(ApplicationContextKey<?> key)
     {
@@ -41,18 +57,27 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
         }
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public Set<ApplicationContextKey<?>> getPermittedKeys() 
     {
         return this.keys;
     }
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public boolean isKeyValid(ApplicationContextKey<?> key)
     {
         return getPermittedKeys().contains(key);
     }
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
@@ -69,6 +94,9 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
         
     }
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, int timeout)
     {
@@ -85,6 +113,9 @@ public class RestrictedInstanceApplicationContext extends AbstractConcurrentAppl
         
     }
     
+    /**
+     * actual merge method
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void doMerge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {

@@ -3,7 +3,18 @@ package fop.context.impl;
 import java.util.Set;
 
 import fop.context.ApplicationContextKey;
+import fop.context.ApplicationContextMergeStrategy;
 
+/**
+ * {@linkplain ApplicationContextMergeStrategy} implementation which ignores the newValue. 
+ * 
+ * If keyset present then ignore newValue ONLY for those keys and use newValue for all other keys.
+ * 
+ * If keyset not present then ignore newValue for all keys
+ * 
+ * @author Akshay Jain
+ *
+ */
 public class ApplicationContextMergeIgnoreStrategy extends AbstractApplicationContextMergeStrategy {
 
     public ApplicationContextMergeIgnoreStrategy()
@@ -11,11 +22,14 @@ public class ApplicationContextMergeIgnoreStrategy extends AbstractApplicationCo
         super(null);
     }
     
-    public ApplicationContextMergeIgnoreStrategy(Set<String> keys)
+    public ApplicationContextMergeIgnoreStrategy(Set<ApplicationContextKey<?>> keys)
     {
         super(keys);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T merge(ApplicationContextKey<T> key, T oldValue, T newValue)
     {

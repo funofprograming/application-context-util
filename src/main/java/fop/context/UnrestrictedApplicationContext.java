@@ -2,6 +2,12 @@ package fop.context;
 
 import java.util.Set;
 
+/**
+ * {@linkplain ApplicationContext} extension with {@linkplain ApplicationContextTypes.Gate}.UNRESTRICTED gate
+ * 
+ * @author Akshay Jain
+ *
+ */
 public interface UnrestrictedApplicationContext extends ApplicationContext 
 {
     default public ApplicationContextTypes.Gate gate() 
@@ -9,6 +15,9 @@ public interface UnrestrictedApplicationContext extends ApplicationContext
         return ApplicationContextTypes.Gate.UNRESTRICTED;
     }
 
+    /**
+     * default merge implementation
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     default public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {

@@ -10,13 +10,28 @@ import fop.context.InstanceApplicationContext;
 import fop.context.UnrestrictedApplicationContext;
 import fop.context.impl.AbstractConcurrentApplicationContext;
 
-public class UnrestrictedInstanceApplicationContext extends AbstractConcurrentApplicationContext implements InstanceApplicationContext, ConcurrentApplicationContext, UnrestrictedApplicationContext
+/**
+ * This is a {@linkplain ConcurrentApplicationContext} extension that implements {@linkplain InstanceApplicationContext} and {@linkplain UnrestrictedApplicationContext}
+ * 
+ * @author Akshay Jain
+ *
+ */
+public class UnrestrictedInstanceApplicationContext extends AbstractConcurrentApplicationContext implements InstanceApplicationContext, UnrestrictedApplicationContext
 {
-    UnrestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutSeconds)
+    /**
+     * Initialize with name and default concurrent write timeout millis
+     * 
+     * @param name
+     * @param concurrentWriteTimeoutMilliseconds
+     */
+    UnrestrictedInstanceApplicationContext(String name, Integer concurrentWriteTimeoutMilliseconds)
     {
-        super(name, concurrentWriteTimeoutSeconds);
+        super(name, concurrentWriteTimeoutMilliseconds);
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
@@ -33,6 +48,9 @@ public class UnrestrictedInstanceApplicationContext extends AbstractConcurrentAp
         
     }
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, int timeout)
     {
@@ -49,6 +67,9 @@ public class UnrestrictedInstanceApplicationContext extends AbstractConcurrentAp
         
     }
     
+    /**
+     * actual merge
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void doMerge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
@@ -70,6 +91,9 @@ public class UnrestrictedInstanceApplicationContext extends AbstractConcurrentAp
         }
     }
     
+    /**
+     * no validation done for {@linkplain UnrestrictedApplicationContext}
+     */
     @Override
     public void validateKey(ApplicationContextKey<?> key)
     {

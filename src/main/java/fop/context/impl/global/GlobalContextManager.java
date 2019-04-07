@@ -15,6 +15,7 @@ import fop.context.impl.InvalidContextException;
 
 /**
  * GlobalContextManager instantiates and manages context in global JVM level environment
+ * 
  * @author akshay.jain
  *
  */

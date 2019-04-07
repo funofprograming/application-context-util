@@ -8,29 +8,63 @@ import java.util.Set;
 import fop.context.ApplicationContext;
 import fop.context.ApplicationContextKey;
 
+/**
+ * Abstract implementation of {@linkplain ApplicationContext}
+ * 
+ * This class implements almost all methods of {@linkplain ApplicationContext}
+ * while leaving key validation task upto its extensions
+ * 
+ * @author Akshay Jain
+ *
+ */
 public abstract class AbstractApplicationContext implements ApplicationContext {
 
     private final Map<ApplicationContextKey<?>, Object> store;
     private final String name; 
     
+    /**
+     * Initialize context with a name and initialize store as a {@linkplain HashMap}
+     * 
+     * @param name
+     */
     protected AbstractApplicationContext(String name) 
     {
         this.name = name;
         this.store = new HashMap<>();
     }
     
+    /**
+     * Validate a give key. 
+     * 
+     * Extensions should throw {@linkplain RuntimeException} extensions if key not valid
+     * 
+     * @param key
+     */
     public abstract void validateKey(ApplicationContextKey<?> key);
     
+    /**
+     * Name of the context
+     * 
+     * @return name
+     */
     public String getName()
     {
         return name;
     }
     
+    /**
+     * Underlying store
+     * 
+     * @return store
+     */
     protected Map<ApplicationContextKey<?>, Object> getStore()
     {
         return store;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value)
     {
@@ -39,6 +73,9 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         getStore().putIfAbsent(key, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value) 
     {
@@ -47,6 +84,9 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         return key.getKeyType().cast(getStore().put(key, value));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void add(ApplicationContextKey<T> key, T value)
     {
@@ -55,6 +95,9 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         getStore().put(key, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> boolean exists(ApplicationContextKey<T> key) 
     {
@@ -63,6 +106,9 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         return getStore().containsKey(key);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T fetch(ApplicationContextKey<T> key) 
     {
@@ -71,6 +117,9 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         return key.getKeyType().cast(getStore().get(key));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T erase(ApplicationContextKey<T> key)
     {
@@ -79,18 +128,27 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         return key.getKeyType().cast(getStore().remove(key));
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clear() 
     {
         getStore().clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<ApplicationContextKey<?>> keySet()
     {
         return Collections.unmodifiableSet(getStore().keySet());
     } 
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(ApplicationContext other) 
     {

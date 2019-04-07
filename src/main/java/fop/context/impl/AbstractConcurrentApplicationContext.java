@@ -3,16 +3,31 @@ package fop.context.impl;
 import fop.context.ApplicationContextKey;
 import fop.context.ConcurrentApplicationContext;
 
+/**
+ * Thread safe extension of {@linkplain AbstractApplicationContext} by implementing {@linkplain ConcurrentApplicationContext}
+ * 
+ * @author Akshay Jain
+ *
+ */
 public abstract class AbstractConcurrentApplicationContext extends AbstractApplicationContext implements ConcurrentApplicationContext
 {
     private final ContextConcurrencyManager contextConcurrencyManager;
 
-    protected AbstractConcurrentApplicationContext(String name, Integer concurrentWriteTimeoutSeconds) 
+    /**
+     * Initialize with a name and default concurrent write timeout in millis
+     * 
+     * @param name
+     * @param concurrentWriteTimeoutMilliseconds
+     */
+    protected AbstractConcurrentApplicationContext(String name, Integer concurrentWriteTimeoutMilliseconds) 
     {
         super(name);
-        this.contextConcurrencyManager = ContextConcurrencyManager.getInstance(concurrentWriteTimeoutSeconds);
+        this.contextConcurrencyManager = ContextConcurrencyManager.getInstance(concurrentWriteTimeoutMilliseconds);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value)
     {
@@ -28,6 +43,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value, int timeout) 
     {
@@ -43,6 +61,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value) 
     {
@@ -58,6 +79,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value, int timeout) 
     {
@@ -73,6 +97,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void add(ApplicationContextKey<T> key, T value)
     {
@@ -88,6 +115,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void add(ApplicationContextKey<T> key, T value, int timeout) 
     {
@@ -103,6 +133,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> boolean exists(ApplicationContextKey<T> key) 
     {
@@ -118,6 +151,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> boolean exists(ApplicationContextKey<T> key, int timeout) 
     {
@@ -133,6 +169,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T fetch(ApplicationContextKey<T> key) 
     {
@@ -148,6 +187,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T fetch(ApplicationContextKey<T> key, int timeout) 
     {
@@ -163,6 +205,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T erase(ApplicationContextKey<T> key) 
     {
@@ -178,6 +223,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T erase(ApplicationContextKey<T> key, int timeout) 
     {
@@ -193,6 +241,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clear() 
     {
@@ -208,6 +259,9 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clear(int timeout) 
     {
@@ -223,6 +277,10 @@ public abstract class AbstractConcurrentApplicationContext extends AbstractAppli
         }
     }
 
+    /**
+     * 
+     * @return concurrency manager used by this context
+     */
     protected ContextConcurrencyManager getContextConcurrencyManager()
     {
         return contextConcurrencyManager;
