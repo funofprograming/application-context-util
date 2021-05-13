@@ -72,15 +72,9 @@ public class TestInheritableThreadLocalApplicationContext
             {
                 throw new RuntimeException(e);
             }
-        }, executorService);
-        
-        CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext localContext = ApplicationContextHolder.getInheritableThreadLocalContext(contextName);
-            return localContext.fetch(validKey);
-        }, executorService);        
+        }, executorService);     
         
         assertEquals(valueSetInThread1, future1.get());
-        assertNull(future2.get());
     }
 
     @Test(expected = InvalidContextException.class)
@@ -151,16 +145,9 @@ public class TestInheritableThreadLocalApplicationContext
             {
                 throw new RuntimeException(e);
             }
-        }, executorService);
-        
-        CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext localContext = new ApplicationContextImpl(contextName);
-            ApplicationContextHolder.setInheritableThreadLocalContext(localContext);
-            return localContext.fetch(validKey);
-        }, executorService);        
+        }, executorService);   
         
         assertEquals(valueSetInThread1, future1.get());
-        assertNull(future2.get());
     }
 
     @Test
@@ -182,23 +169,9 @@ public class TestInheritableThreadLocalApplicationContext
             }
             localContext = ApplicationContextHolder.getInheritableThreadLocalContext(contextName);
             return localContext.fetch(validKey);
-        }, executorService);
-        
-        CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            try
-            {
-                Thread.sleep(2000);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-            ApplicationContext localContext = ApplicationContextHolder.getInheritableThreadLocalContext(contextName);
-            return localContext.fetch(validKey);
-        }, executorService);        
+        }, executorService);       
         
         assertNull(future1.get());
-        assertNull(future2.get());
     }
 
 }

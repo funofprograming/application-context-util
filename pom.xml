@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>programing.fun</groupId>
 	<artifactId>application-context-util</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>Application Context Util</name>
 	<description>Utility to manage contexts in application</description>
 	<url>https://github.com/akshayjain7983/application-context-util</url>
