@@ -28,5 +28,5 @@ public class ApplicationContextKey<T> implements Serializable
     /**
      * Type of key as {@linkplain Class}
      */
-    private final Class<T> keyType;
+    private final ParameterizedTypeReference<T> valueType;
 }

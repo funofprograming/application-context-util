@@ -1,22 +1,19 @@
 package fop.context.impl;
 
-import java.util.ConcurrentModificationException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import fop.context.ConcurrentApplicationContext;
-
 /**
- * Concurrency manager for {@linkplain ConcurrentApplicationContext} implementations. This uses a {@linkplain ReentrantReadWriteLock} for mutual exclusion
+ * Concurrency manager for {@linkplain ConcurrentApplicationContextImpl} implementations. This uses a {@linkplain ReentrantReadWriteLock} for mutual exclusion
  * @author Akshay Jain
  *
  */
-public class ContextConcurrencyManager
+class ContextConcurrencyManager
 {
-    private static final Integer DEFAULT_TRY_DURATION_MILLISECONDS = 0;
+    private static final Long DEFAULT_TRY_DURATION_MILLISECONDS = Long.MAX_VALUE; //block forever
     
-    private final Integer tryDurationMilliseconds;
     private final ReadWriteLock readWriteLock;
     
     /**
@@ -25,9 +22,9 @@ public class ContextConcurrencyManager
      * @param tryDurationMilliseconds
      * @return
      */
-    public static ContextConcurrencyManager getInstance(Integer tryDurationMilliseconds)
+    public static ContextConcurrencyManager getInstance()
     {
-        return new ContextConcurrencyManager(tryDurationMilliseconds);
+        return new ContextConcurrencyManager();
     }
     
     /**
@@ -36,9 +33,8 @@ public class ContextConcurrencyManager
      * @param tryDurationMilliseconds
      * @return
      */
-    private ContextConcurrencyManager(Integer tryDurationMilliseconds)
+    private ContextConcurrencyManager()
     {
-        this.tryDurationMilliseconds = tryDurationMilliseconds != null ? tryDurationMilliseconds : DEFAULT_TRY_DURATION_MILLISECONDS;
         this.readWriteLock = new ReentrantReadWriteLock();
     }
     
@@ -48,21 +44,16 @@ public class ContextConcurrencyManager
      * @param timeout
      * @return
      */
-    public boolean acquireReadLock(int timeout) 
+    public boolean acquireReadLock(Long timeout) 
     {
         boolean locked = false;
         try 
         {
-            locked = readWriteLock.readLock().tryLock(timeout, TimeUnit.MILLISECONDS);
+            locked = readWriteLock.readLock().tryLock(resolveTryDurationMilliseconds(timeout), TimeUnit.MILLISECONDS);
         } 
         catch (InterruptedException e) 
         {
             locked = false;
-        }
-        
-        if(!locked)
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
         }
         
         return locked;
@@ -75,7 +66,7 @@ public class ContextConcurrencyManager
      */
     public boolean acquireReadLock() 
     {
-        return acquireReadLock(tryDurationMilliseconds);
+        return acquireReadLock(null);
     }
     
     /**
@@ -92,21 +83,16 @@ public class ContextConcurrencyManager
      * @param timeout
      * @return
      */
-    public boolean acquireWriteLock(int timeout) 
+    public boolean acquireWriteLock(Long timeout) 
     {
         boolean locked = false;
         try 
         {
-            locked = readWriteLock.writeLock().tryLock(timeout, TimeUnit.MILLISECONDS);
+            locked = readWriteLock.writeLock().tryLock(resolveTryDurationMilliseconds(timeout), TimeUnit.MILLISECONDS);
         } 
         catch (InterruptedException e) 
         {
             locked = false;
-        }
-        
-        if(!locked)
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
         }
         
         return locked;
@@ -119,7 +105,7 @@ public class ContextConcurrencyManager
      */
     public boolean acquireWriteLock() 
     {
-        return acquireWriteLock(tryDurationMilliseconds);
+        return acquireWriteLock(null);
     }
     
     /**
@@ -128,5 +114,10 @@ public class ContextConcurrencyManager
     public void releaseWriteLock()
     {
         readWriteLock.writeLock().unlock();
+    }
+    
+    private long resolveTryDurationMilliseconds(Long tryDurationMilliseconds) {
+        
+        return Objects.nonNull(tryDurationMilliseconds) ? tryDurationMilliseconds : DEFAULT_TRY_DURATION_MILLISECONDS;
     }
 }

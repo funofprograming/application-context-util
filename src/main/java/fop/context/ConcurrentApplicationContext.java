@@ -17,7 +17,7 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * @param value
      * @param timeout in millis
      */
-    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value, int timeout);
+    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value, Long timeout);
     
     /**
      * Same as addWithOverwrite in {@linkplain ApplicationContext} with additional timeout parameter 
@@ -29,7 +29,7 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * @param timeout in millis
      * @return
      */
-    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value, int timeout);
+    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value, Long timeout);
     
     /**
      * Same as add in {@linkplain ApplicationContext} with additional timeout parameter 
@@ -40,7 +40,7 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * @param value
      * @param timeout in millis
      */
-    public <T> void add(ApplicationContextKey<T> key, T value, int timeout);
+    public <T> void add(ApplicationContextKey<T> key, T value, Long timeout);
     
     /**
      * Same as exists in {@linkplain ApplicationContext} with additional timeout parameter 
@@ -51,7 +51,7 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * @param timeout in millis
      * @return
      */
-    public <T> boolean exists(ApplicationContextKey<T> key, int timeout);
+    public <T> boolean exists(ApplicationContextKey<T> key, Long timeout);
 
     /**
      * Same as fetch in {@linkplain ApplicationContext} with additional timeout parameter 
@@ -62,7 +62,7 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * @param timeout in millis
      * @return
      */
-    public <T> T fetch(ApplicationContextKey<T> key, int timeout);
+    public <T> T fetch(ApplicationContextKey<T> key, Long timeout);
     
     /**
      * Same as erase in {@linkplain ApplicationContext} with additional timeout parameter 
@@ -73,7 +73,7 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * @param timeout in millis
      * @return
      */
-    public <T> T erase(ApplicationContextKey<T> key, int timeout);
+    public <T> T erase(ApplicationContextKey<T> key, Long timeout);
     
     /**
      * Same as clear in {@linkplain ApplicationContext} with additional timeout parameter 
@@ -81,7 +81,7 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * 
      * @param timeout in millis
      */
-    public void clear(int timeout);
+    public void clear(Long timeout);
     
     /**
      * Same as merge in {@linkplain ApplicationContext} with additional timeout parameter 
@@ -91,5 +91,5 @@ public interface ConcurrentApplicationContext extends ApplicationContext
      * @param mergeStrategy
      * @param timeout in millis
      */
-    public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, int timeout);
+    public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, Long timeout);
 }

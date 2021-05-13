@@ -11,19 +11,12 @@ import java.util.Set;
  */
 public interface ApplicationContext extends Cloneable
 {
-    /**
-     * Scope of context
-     * 
-     * @return {@linkplain ApplicationContextTypes.Scope}
-     */
-    public ApplicationContextTypes.Scope scope();
-    
-    /**
-     * Gate of context
-     * 
-     * @return {@linkplain ApplicationContextTypes.Gate}
-     */
-    public ApplicationContextTypes.Gate gate();
+//    /**
+//     * Scope of context
+//     * 
+//     * @return {@linkplain ApplicationContextTypes.Scope}
+//     */
+//    public ApplicationContextTypes.Scope scope();
     
     /**
      * Application context name
@@ -31,6 +24,23 @@ public interface ApplicationContext extends Cloneable
      * @return Application context name
      */
     public String getName();
+    
+    /**
+     * Keys permitted for this context. Empty set means all keys permitted.
+     * 
+     * Implementations should allow setting up of PermittedKeys at time of context initialization 
+     * 
+     * @return set of permitted keys
+     */
+    public Set<ApplicationContextKey<?>> getPermittedKeys();
+    
+    /**
+     * Checks if key is valid for this context.
+     * 
+     * 
+     * @return key
+     */
+    public boolean isKeyValid(ApplicationContextKey<?> key);
     
     /**
      * Add value for given key if not already present.
