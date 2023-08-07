@@ -11,10 +11,8 @@ import fop.context.ApplicationContextKey;
 import fop.context.ApplicationContextMergeStrategy;
 
 /**
- * Abstract implementation of {@linkplain ApplicationContext}
+ * Plain vanilla implementation of {@linkplain ApplicationContext}
  * 
- * This class implements almost all methods of {@linkplain ApplicationContext}
- * while leaving key validation task upto its extensions
  * 
  * @author Akshay Jain
  *

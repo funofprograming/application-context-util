@@ -2,7 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>programing.fun</groupId>
+	<groupId>io.fop</groupId>
 	<artifactId>application-context-util</artifactId>
 	<version>1.0.0</version>
 	<name>Application Context Util</name>
@@ -10,7 +10,10 @@
 	<url>https://github.com/akshayjain7983/application-context-util</url>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<maven.compiler.release>${java.version}</maven.compiler.release>
 	</properties>
 
 	<build>
@@ -18,7 +21,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.11.0</version>
 				<configuration>
 					<release>${java.version}</release>
 				</configuration>
@@ -26,7 +29,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -40,7 +43,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -48,9 +51,6 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
-						<configuration>
-		                    <additionalparam>-Xdoclint:none</additionalparam>
-		                </configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.6</version>
+			<version>1.18.28</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
