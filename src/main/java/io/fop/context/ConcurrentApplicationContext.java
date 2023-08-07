@@ -1,4 +1,4 @@
-package fop.context;
+package io.fop.context;
 
 /**
  * Thread safe version of {@linkplain ApplicationContext}

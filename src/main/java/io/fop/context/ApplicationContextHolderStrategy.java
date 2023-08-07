@@ -1,9 +1,9 @@
-package fop.context;
+package io.fop.context;
 
 import java.util.Set;
 
-import fop.context.impl.InvalidContextException;
-import fop.context.impl.InvalidKeyException;
+import io.fop.context.impl.InvalidContextException;
+import io.fop.context.impl.InvalidKeyException;
 
 public interface ApplicationContextHolderStrategy
 {

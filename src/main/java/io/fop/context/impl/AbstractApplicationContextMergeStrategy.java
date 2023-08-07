@@ -1,10 +1,10 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 import java.util.Objects;
 import java.util.Set;
 
-import fop.context.ApplicationContextKey;
-import fop.context.ApplicationContextMergeStrategy;
+import io.fop.context.ApplicationContextKey;
+import io.fop.context.ApplicationContextMergeStrategy;
 
 /**
  * Abstract implementation of {@linkplain ApplicationContextMergeStrategy}

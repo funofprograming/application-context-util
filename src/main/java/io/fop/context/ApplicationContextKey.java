@@ -1,4 +1,4 @@
-package fop.context;
+package io.fop.context;
 
 import java.io.Serializable;
 

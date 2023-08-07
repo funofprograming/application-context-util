@@ -1,10 +1,10 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 import java.util.Set;
 
-import fop.context.ApplicationContext;
-import fop.context.ApplicationContextHolderStrategy;
-import fop.context.ApplicationContextKey;
+import io.fop.context.ApplicationContext;
+import io.fop.context.ApplicationContextHolderStrategy;
+import io.fop.context.ApplicationContextKey;
 
 public class ApplicationContextHolder
 {

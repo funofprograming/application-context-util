@@ -1,9 +1,9 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 import java.util.Set;
 
-import fop.context.ApplicationContextKey;
-import fop.context.ApplicationContextMergeStrategy;
+import io.fop.context.ApplicationContextKey;
+import io.fop.context.ApplicationContextMergeStrategy;
 
 /**
  * {@linkplain ApplicationContextMergeStrategy} implementation which ignores the newValue. 

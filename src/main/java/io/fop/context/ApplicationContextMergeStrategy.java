@@ -1,4 +1,4 @@
-package fop.context;
+package io.fop.context;
 
 /**
  * Merge strategy for merging any two context

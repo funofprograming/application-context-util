@@ -1,12 +1,12 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 import java.util.ConcurrentModificationException;
 import java.util.Set;
 
-import fop.context.ApplicationContext;
-import fop.context.ApplicationContextKey;
-import fop.context.ApplicationContextMergeStrategy;
-import fop.context.ConcurrentApplicationContext;
+import io.fop.context.ApplicationContext;
+import io.fop.context.ApplicationContextKey;
+import io.fop.context.ApplicationContextMergeStrategy;
+import io.fop.context.ConcurrentApplicationContext;
 
 /**
  * Thread safe extension of {@linkplain ApplicationContextImpl} by implementing {@linkplain ConcurrentApplicationContextImpl}

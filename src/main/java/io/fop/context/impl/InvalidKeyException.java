@@ -1,4 +1,4 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 public class InvalidKeyException extends IllegalArgumentException {
 

@@ -1,17 +1,17 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import fop.context.ApplicationContext;
-import fop.context.ApplicationContextHolderStrategy;
-import fop.context.ApplicationContextKey;
+import io.fop.context.ApplicationContext;
+import io.fop.context.ApplicationContextHolderStrategy;
+import io.fop.context.ApplicationContextKey;
 
-public final class ThreadLocalContextHolderStrategy implements ApplicationContextHolderStrategy
+public final class InheritableThreadLocalContextHolderStrategy implements ApplicationContextHolderStrategy
 {
-    private static final ThreadLocal<Map<String, ApplicationContext>> LOCAL_CONTEXT_STORE = new ThreadLocal<>() {
+    private static final ThreadLocal<Map<String, ApplicationContext>> LOCAL_CONTEXT_STORE = new InheritableThreadLocal<>() {
         
         protected Map<String, ApplicationContext> initialValue() {
             return new HashMap<>();

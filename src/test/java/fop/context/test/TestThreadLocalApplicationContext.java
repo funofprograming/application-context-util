@@ -16,13 +16,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import fop.context.ApplicationContext;
-import fop.context.ApplicationContextKey;
-import fop.context.ParameterizedTypeReference;
-import fop.context.impl.ApplicationContextHolder;
-import fop.context.impl.ApplicationContextImpl;
-import fop.context.impl.InvalidContextException;
-import fop.context.impl.InvalidKeyException;
+import io.fop.context.ApplicationContext;
+import io.fop.context.ApplicationContextKey;
+import io.fop.context.ParameterizedTypeReference;
+import io.fop.context.impl.ApplicationContextHolder;
+import io.fop.context.impl.ApplicationContextImpl;
+import io.fop.context.impl.InvalidContextException;
+import io.fop.context.impl.InvalidKeyException;
 
 public class TestThreadLocalApplicationContext
 {

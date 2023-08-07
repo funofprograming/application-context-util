@@ -1,4 +1,4 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import fop.context.ApplicationContext;
-import fop.context.ApplicationContextKey;
-import fop.context.ApplicationContextMergeStrategy;
+import io.fop.context.ApplicationContext;
+import io.fop.context.ApplicationContextKey;
+import io.fop.context.ApplicationContextMergeStrategy;
 
 /**
  * Plain vanilla implementation of {@linkplain ApplicationContext}

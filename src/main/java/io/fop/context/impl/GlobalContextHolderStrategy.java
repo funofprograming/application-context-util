@@ -1,14 +1,14 @@
-package fop.context.impl;
+package io.fop.context.impl;
 
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import fop.context.ApplicationContext;
-import fop.context.ApplicationContextHolderStrategy;
-import fop.context.ApplicationContextKey;
-import fop.context.ConcurrentApplicationContext;
+import io.fop.context.ApplicationContext;
+import io.fop.context.ApplicationContextHolderStrategy;
+import io.fop.context.ApplicationContextKey;
+import io.fop.context.ConcurrentApplicationContext;
 
 public final class GlobalContextHolderStrategy implements ApplicationContextHolderStrategy
 {
