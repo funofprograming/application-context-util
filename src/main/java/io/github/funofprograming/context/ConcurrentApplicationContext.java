@@ -1,4 +1,4 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 /**
  * Thread safe version of {@linkplain ApplicationContext}

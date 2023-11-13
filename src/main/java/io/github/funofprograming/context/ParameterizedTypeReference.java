@@ -1,7 +1,9 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+
+import lombok.EqualsAndHashCode;
 
 /**
  * The purpose of this class is to enable capturing and passing a generic
@@ -19,7 +21,7 @@ import java.lang.reflect.Type;
  * This is inspired by Spring project
  * @see <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/ParameterizedTypeReference.java">ParameterizedTypeReference</a>
  */
-
+@EqualsAndHashCode
 public abstract class ParameterizedTypeReference<T>
 {
     private final Type type;
@@ -38,29 +40,6 @@ public abstract class ParameterizedTypeReference<T>
     protected ParameterizedTypeReference(Type type)
     {
         this.type = type;
-    }
-
-    public Type getType()
-    {
-        return this.type;
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        return (this == other || (other instanceof ParameterizedTypeReference && this.type.equals(((ParameterizedTypeReference<?>) other).type)));
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return this.type.hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ParameterizedTypeReference<" + this.type + ">";
     }
 
     /**
@@ -96,4 +75,13 @@ public abstract class ParameterizedTypeReference<T>
             return findParameterizedTypeReferenceSubclass(parent);
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() 
+    {
+        return type.getTypeName();
+    } 
 }

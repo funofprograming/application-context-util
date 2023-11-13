@@ -1,4 +1,4 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.util.Set;
 /**
@@ -11,12 +11,6 @@ import java.util.Set;
  */
 public interface ApplicationContext extends Cloneable
 {
-//    /**
-//     * Scope of context
-//     * 
-//     * @return {@linkplain ApplicationContextTypes.Scope}
-//     */
-//    public ApplicationContextTypes.Scope scope();
     
     /**
      * Application context name
@@ -118,14 +112,6 @@ public interface ApplicationContext extends Cloneable
      * @return set of keys in context
      */
     public Set<ApplicationContextKey<?>> keySet();
-    
-    /**
-     * Check equality of this context with the other one
-     * 
-     * @param other
-     * @return true if other context is equal to this otherwise false
-     */
-    public boolean equals(ApplicationContext other);
     
     /**
      * Merge other context with this using the given merge strategy

@@ -1,4 +1,4 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 public class InvalidContextException extends RuntimeException {
 

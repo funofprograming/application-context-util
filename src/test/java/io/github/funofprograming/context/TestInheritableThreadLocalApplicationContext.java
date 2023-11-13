@@ -1,4 +1,4 @@
-package fop.context.test;
+package io.github.funofprograming.context;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -18,13 +18,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ParameterizedTypeReference;
-import io.fop.context.impl.ApplicationContextHolder;
-import io.fop.context.impl.ApplicationContextImpl;
-import io.fop.context.impl.InvalidContextException;
-import io.fop.context.impl.InvalidKeyException;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.ApplicationContextKey;
+import io.github.funofprograming.context.ParameterizedTypeReference;
+import io.github.funofprograming.context.impl.ApplicationContextHolder;
+import io.github.funofprograming.context.impl.ApplicationContextImpl;
+import io.github.funofprograming.context.impl.InvalidContextException;
+import io.github.funofprograming.context.impl.InvalidKeyException;
 
 public class TestInheritableThreadLocalApplicationContext
 {

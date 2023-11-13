@@ -2,12 +2,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.fop</groupId>
+	<groupId>io.github.funofprograming</groupId>
 	<artifactId>application-context-util</artifactId>
 	<version>1.0.0</version>
 	<name>Application Context Util</name>
 	<description>Utility to manage contexts in application</description>
-	<url>https://github.com/akshayjain7983/application-context-util</url>
+	<url>https://github.com/funofprograming/application-context-util</url>
 
 	<properties>
 		<java.version>17</java.version>
@@ -83,15 +83,14 @@
 	<developers>
 		<developer>
 			<name>Akshay Jain</name>
-			<email>akshay.jain.7983@gmail.com</email>
 			<organization>Fun of Programing</organization>
-			<organizationUrl>http://funofprograming.wordpress.com</organizationUrl>
+			<organizationUrl>https://funofprograming.github.io</organizationUrl>
 		</developer>
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/akshayjain7983/application-context-util.git</connection>
-		<developerConnection>scm:git:ssh://github.com:akshayjain7983/application-context-util.git</developerConnection>
-		<url>http://github.com/akshayjain7983/application-context-util/tree/master</url>
+		<connection>scm:git:git://github.com/funofprograming/application-context-util</connection>
+		<developerConnection>scm:git:ssh://github.com:funofprograming/application-context-util</developerConnection>
+		<url>http://github.com/funofprograming/application-context-util/tree/master</url>
 	</scm>
 </project>

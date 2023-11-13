@@ -1,4 +1,4 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 /**
  * Merge strategy for merging any two context

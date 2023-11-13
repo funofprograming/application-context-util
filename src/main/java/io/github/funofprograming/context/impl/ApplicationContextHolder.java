@@ -1,15 +1,16 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.Set;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextHolderStrategy;
-import io.fop.context.ApplicationContextKey;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.ApplicationContextHolderStrategy;
+import io.github.funofprograming.context.ApplicationContextKey;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApplicationContextHolder
 {
-    private ApplicationContextHolder() {} //all static methods so should not be initializable
-    
     private static final ApplicationContextHolderStrategy globalContextHolderStrategy = new GlobalContextHolderStrategy();
     
     private static final ApplicationContextHolderStrategy threadLocalContextHolderStrategy = new ThreadLocalContextHolderStrategy();
@@ -149,7 +150,7 @@ public class ApplicationContextHolder
      * @param applicationContextHolderStrategy
      * @return
      */
-    public static ApplicationContext getContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy) 
+    private static ApplicationContext getContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy) 
     {
         return applicationContextHolderStrategy.getContext(name);
     }
@@ -161,7 +162,7 @@ public class ApplicationContextHolder
      * @param applicationContextHolderStrategy
      * @return
      */
-    public static ApplicationContext getContext(String name, Set<ApplicationContextKey<?>> permittedKeys, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    private static ApplicationContext getContext(String name, Set<ApplicationContextKey<?>> permittedKeys, ApplicationContextHolderStrategy applicationContextHolderStrategy)
     {
         return applicationContextHolderStrategy.getContext(name, permittedKeys);
     }
@@ -172,7 +173,7 @@ public class ApplicationContextHolder
      * @param applicationContext
      * @param applicationContextHolderStrategy
      */
-    public static void setContext(ApplicationContext applicationContext, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    private static void setContext(ApplicationContext applicationContext, ApplicationContextHolderStrategy applicationContextHolderStrategy)
     {
         applicationContextHolderStrategy.setContext(applicationContext);
     }
@@ -183,7 +184,7 @@ public class ApplicationContextHolder
      * @param name
      * @param applicationContextHolderStrategy
      */
-    public static ApplicationContext clearContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    private static ApplicationContext clearContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy)
     {
         return applicationContextHolderStrategy.clearContext(name);
     }

@@ -1,4 +1,4 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.io.Serializable;
 
@@ -29,4 +29,13 @@ public class ApplicationContextKey<T> implements Serializable
      * Type of key as {@linkplain Class}
      */
     private final ParameterizedTypeReference<T> valueType;
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() 
+    {
+        return keyName+"<"+valueType+">";
+    }
 }

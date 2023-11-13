@@ -1,9 +1,9 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.util.Set;
 
-import io.fop.context.impl.InvalidContextException;
-import io.fop.context.impl.InvalidKeyException;
+import io.github.funofprograming.context.impl.InvalidContextException;
+import io.github.funofprograming.context.impl.InvalidKeyException;
 
 public interface ApplicationContextHolderStrategy
 {

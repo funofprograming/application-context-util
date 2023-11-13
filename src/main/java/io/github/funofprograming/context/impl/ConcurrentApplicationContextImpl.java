@@ -1,12 +1,14 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.ConcurrentModificationException;
 import java.util.Set;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ApplicationContextMergeStrategy;
-import io.fop.context.ConcurrentApplicationContext;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.ApplicationContextKey;
+import io.github.funofprograming.context.ApplicationContextMergeStrategy;
+import io.github.funofprograming.context.ConcurrentApplicationContext;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 /**
  * Thread safe extension of {@linkplain ApplicationContextImpl} by implementing {@linkplain ConcurrentApplicationContextImpl}
@@ -16,6 +18,7 @@ import io.fop.context.ConcurrentApplicationContext;
  */
 public class ConcurrentApplicationContextImpl extends ApplicationContextImpl implements ConcurrentApplicationContext
 {
+    @Getter(AccessLevel.PROTECTED)
     private final ContextConcurrencyManager contextConcurrencyManager;
 
     /**
@@ -314,7 +317,10 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public void clear(Long timeout) 
     {
-        getContextConcurrencyManager().acquireWriteLock(timeout);
+        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
+        {
+            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
+        }
         
         try
         {
@@ -329,7 +335,10 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, Long timeout)
     {
-        getContextConcurrencyManager().acquireWriteLock(timeout);
+        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
+        {
+            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
+        }
         
         try
         {
@@ -345,14 +354,5 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
         this.merge(other, mergeStrategy, null);
-    }
-
-    /**
-     * 
-     * @return concurrency manager used by this context
-     */
-    protected ContextConcurrencyManager getContextConcurrencyManager()
-    {
-        return contextConcurrencyManager;
     }
 }

@@ -1,14 +1,18 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ApplicationContextMergeStrategy;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.ApplicationContextKey;
+import io.github.funofprograming.context.ApplicationContextMergeStrategy;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Plain vanilla implementation of {@linkplain ApplicationContext}
@@ -17,11 +21,18 @@ import io.fop.context.ApplicationContextMergeStrategy;
  * @author Akshay Jain
  *
  */
+@EqualsAndHashCode
+@ToString
 public class ApplicationContextImpl implements ApplicationContext {
 
+    @Getter
+    private final String name;
+    
+    @Getter
     private final Set<ApplicationContextKey<?>> permittedKeys;
-    private final Map<ApplicationContextKey<?>, Object> store;
-    private final String name; 
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final Map<ApplicationContextKey<?>, Object> store; 
     
     /**
      * Initialize context with a name and initialize store as a {@linkplain HashMap}
@@ -41,7 +52,7 @@ public class ApplicationContextImpl implements ApplicationContext {
     public ApplicationContextImpl(String name, Set<ApplicationContextKey<?>> permittedKeys) 
     {
         this.name = name;
-        this.permittedKeys = Objects.nonNull(permittedKeys) ? Collections.unmodifiableSet(permittedKeys) : Collections.emptySet();
+        this.permittedKeys = Optional.ofNullable(permittedKeys).map(p->Collections.unmodifiableSet(p)).orElse(Collections.emptySet());
         this.store = new HashMap<>();
     }
     
@@ -52,36 +63,10 @@ public class ApplicationContextImpl implements ApplicationContext {
      */
     protected void validateKey(ApplicationContextKey<?> key)
     {
-        if(Objects.nonNull(getPermittedKeys()) && !getPermittedKeys().isEmpty() && !getPermittedKeys().contains(key)) 
+        if(Optional.ofNullable(getPermittedKeys()).map(p->!p.isEmpty() && !p.contains(key)).orElse(Boolean.FALSE))
         {
             throw new InvalidKeyException("Invalid key:"+key+". Valid keys for this context are: "+getPermittedKeys());
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getName()
-    {
-        return name;
-    }
-    
-    /**
-     * Underlying store
-     * 
-     * @return store
-     */
-    protected Map<ApplicationContextKey<?>, Object> getStore()
-    {
-        return store;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public Set<ApplicationContextKey<?>> getPermittedKeys()
-    {
-        return this.permittedKeys;
     }
     
     /**
@@ -212,22 +197,5 @@ public class ApplicationContextImpl implements ApplicationContext {
                 addIfNotPresent(keyOther, newValue);
             }
         }
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(ApplicationContext other) 
-    {
-        if(other == null)
-            return false;
-        
-        if(!(other instanceof ApplicationContextImpl))
-            return false;
-        
-        return this.name.equals(other.getName())
-                && this.permittedKeys.equals(other.getPermittedKeys())
-                && this.getStore().equals(((ApplicationContextImpl)other).getStore());
     }
 }
