@@ -45,7 +45,7 @@ public abstract class AbstractApplicationContextHolderStrategy implements Applic
                     !Optional.ofNullable(permittedKeys).orElse(Collections.emptySet()).equals(Optional.ofNullable(permittedKeysExisting).orElse(Collections.emptySet()))
                )
             {
-                throw new InvalidContextException("A context with this name and different set of permittedKeys exists");
+                throw new InvalidContextException("A context with this name and different set of permittedKeys already exists for this ApplicationContextHolderStrategy");
             }
         }
         
@@ -78,6 +78,10 @@ public abstract class AbstractApplicationContextHolderStrategy implements Applic
     protected void validateContext(ApplicationContext applicationContext)
     {
         Objects.requireNonNull(applicationContext, "Cannot set null ApplicationContext");
+        if(contextContainedInStore(applicationContext.getName()))
+        {
+            throw new InvalidContextException("Context with same name already exists for this ApplicationContextHolderStrategy");
+        }
     }
     
     
