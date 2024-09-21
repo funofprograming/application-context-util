@@ -1,9 +1,9 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.util.Set;
 
-import io.fop.context.impl.InvalidContextException;
-import io.fop.context.impl.InvalidKeyException;
+import io.github.funofprograming.context.impl.InvalidContextException;
+import io.github.funofprograming.context.impl.InvalidKeyException;
 
 public interface ApplicationContextHolderStrategy
 {
@@ -21,7 +21,7 @@ public interface ApplicationContextHolderStrategy
      * @param name
      * @return
      */
-    public ApplicationContext getContext(String name, Set<ApplicationContextKey<?>> permittedKeys);
+    public ApplicationContext getContext(String name, Set<Key<?>> permittedKeys);
     
     /**
      * Set any externally created context into the context holder strategy. If any context with this name already exist then this method should throw {@link InvalidContextException}
@@ -34,6 +34,23 @@ public interface ApplicationContextHolderStrategy
      * Clear context for given name and return back the context
      * 
      * @param name
+     * @return
      */
     public ApplicationContext clearContext(String name);
+    
+    /**
+     * Check if context with given name exists in this context holder strategy
+     * 
+     * @param name
+     * @return
+     */
+    public boolean existsContext(String name);
+    
+    /**
+     * Check if context with given name and permittedKeys exists in this context holder strategy
+     * 
+     * @param name
+     * @return
+     */
+    public boolean existsContext(String name, Set<Key<?>> permittedKeys);
 }

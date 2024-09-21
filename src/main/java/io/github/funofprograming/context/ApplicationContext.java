@@ -1,4 +1,4 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.util.Set;
 /**
@@ -11,12 +11,6 @@ import java.util.Set;
  */
 public interface ApplicationContext extends Cloneable
 {
-//    /**
-//     * Scope of context
-//     * 
-//     * @return {@linkplain ApplicationContextTypes.Scope}
-//     */
-//    public ApplicationContextTypes.Scope scope();
     
     /**
      * Application context name
@@ -32,7 +26,7 @@ public interface ApplicationContext extends Cloneable
      * 
      * @return set of permitted keys
      */
-    public Set<ApplicationContextKey<?>> getPermittedKeys();
+    public Set<Key<?>> getPermittedKeys();
     
     /**
      * Checks if key is valid for this context.
@@ -40,7 +34,7 @@ public interface ApplicationContext extends Cloneable
      * 
      * @return key
      */
-    public boolean isKeyValid(ApplicationContextKey<?> key);
+    public boolean isKeyValid(Key<?> key);
     
     /**
      * Add value for given key if not already present.
@@ -57,7 +51,7 @@ public interface ApplicationContext extends Cloneable
      * @param key
      * @param value
      */
-    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value);
+    public <T> void addIfNotPresent(Key<T> key, T value);
     
     /**
      * Add value for given key even if already present.
@@ -68,7 +62,7 @@ public interface ApplicationContext extends Cloneable
      * @param value
      * @return Previous value associated with key if any or null
      */
-    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value);
+    public <T> T addWithOverwrite(Key<T> key, T value);
     
     /**
      * Add value for given key.
@@ -78,7 +72,7 @@ public interface ApplicationContext extends Cloneable
      * @param key
      * @param value
      */
-    public <T> void add(ApplicationContextKey<T> key, T value);
+    public <T> void add(Key<T> key, T value);
 
     /**
      * Check if any value or null associated with give key
@@ -87,7 +81,7 @@ public interface ApplicationContext extends Cloneable
      * @param key
      * @return true if value or null associated with give key otherwise false
      */
-    public <T> boolean exists(ApplicationContextKey<T> key);
+    public <T> boolean exists(Key<T> key);
 
     /**
      * Fetch value associated with key or null
@@ -96,7 +90,7 @@ public interface ApplicationContext extends Cloneable
      * @param key
      * @return value associated with key or null
      */
-    public <T> T fetch(ApplicationContextKey<T> key);
+    public <T> T fetch(Key<T> key);
     
     /**
      * Erase value associated with key if any
@@ -105,7 +99,7 @@ public interface ApplicationContext extends Cloneable
      * @param key
      * @return value associate with key or null
      */
-    public <T> T erase(ApplicationContextKey<T> key);
+    public <T> T erase(Key<T> key);
     
     /**
      * Clear the entire context
@@ -117,15 +111,7 @@ public interface ApplicationContext extends Cloneable
      * 
      * @return set of keys in context
      */
-    public Set<ApplicationContextKey<?>> keySet();
-    
-    /**
-     * Check equality of this context with the other one
-     * 
-     * @param other
-     * @return true if other context is equal to this otherwise false
-     */
-    public boolean equals(ApplicationContext other);
+    public Set<Key<?>> keySet();
     
     /**
      * Merge other context with this using the given merge strategy

@@ -1,14 +1,19 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ApplicationContextMergeStrategy;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.ApplicationContextMergeStrategy;
+import io.github.funofprograming.context.Key;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Plain vanilla implementation of {@linkplain ApplicationContext}
@@ -17,11 +22,18 @@ import io.fop.context.ApplicationContextMergeStrategy;
  * @author Akshay Jain
  *
  */
+@EqualsAndHashCode
+@ToString
 public class ApplicationContextImpl implements ApplicationContext {
 
-    private final Set<ApplicationContextKey<?>> permittedKeys;
-    private final Map<ApplicationContextKey<?>, Object> store;
-    private final String name; 
+    @Getter
+    private final String name;
+    
+    @Getter
+    private final Set<Key<?>> permittedKeys;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final Map<Key<?>, Optional<Object>> store; 
     
     /**
      * Initialize context with a name and initialize store as a {@linkplain HashMap}
@@ -38,11 +50,11 @@ public class ApplicationContextImpl implements ApplicationContext {
      * 
      * @param name
      */
-    public ApplicationContextImpl(String name, Set<ApplicationContextKey<?>> permittedKeys) 
+    public ApplicationContextImpl(String name, Set<Key<?>> permittedKeys) 
     {
         this.name = name;
-        this.permittedKeys = Objects.nonNull(permittedKeys) ? Collections.unmodifiableSet(permittedKeys) : Collections.emptySet();
-        this.store = new HashMap<>();
+        this.permittedKeys = Optional.ofNullable(permittedKeys).map(p->Collections.unmodifiableSet(p)).orElse(Collections.emptySet());
+        this.store = new LinkedHashMap<>();
     }
     
     /**
@@ -50,44 +62,18 @@ public class ApplicationContextImpl implements ApplicationContext {
      * 
      * @param key
      */
-    protected void validateKey(ApplicationContextKey<?> key)
+    protected void validateKey(Key<?> key)
     {
-        if(Objects.nonNull(getPermittedKeys()) && !getPermittedKeys().isEmpty() && !getPermittedKeys().contains(key)) 
+        if(Optional.ofNullable(getPermittedKeys()).map(p->!p.isEmpty() && !p.contains(key)).orElse(Boolean.FALSE))
         {
             throw new InvalidKeyException("Invalid key:"+key+". Valid keys for this context are: "+getPermittedKeys());
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getName()
-    {
-        return name;
-    }
-    
-    /**
-     * Underlying store
-     * 
-     * @return store
-     */
-    protected Map<ApplicationContextKey<?>, Object> getStore()
-    {
-        return store;
-    }
     
     /**
      * {@inheritDoc}
      */
-    public Set<ApplicationContextKey<?>> getPermittedKeys()
-    {
-        return this.permittedKeys;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isKeyValid(ApplicationContextKey<?> key)
+    public boolean isKeyValid(Key<?> key)
     {
         try 
         {
@@ -104,11 +90,11 @@ public class ApplicationContextImpl implements ApplicationContext {
      * {@inheritDoc}
      */
     @Override
-    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value)
+    public <T> void addIfNotPresent(Key<T> key, T value)
     {
         validateKey(key);
         
-        getStore().putIfAbsent(key, value);
+        getStore().putIfAbsent(key, Optional.ofNullable(value));
     }
 
     /**
@@ -116,29 +102,29 @@ public class ApplicationContextImpl implements ApplicationContext {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value) 
+    public <T> T addWithOverwrite(Key<T> key, T value) 
     {
         validateKey(key);
         
-        return (T)getStore().put(key, value);
+        return (T)getStore().put(key, Optional.ofNullable(value));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> void add(ApplicationContextKey<T> key, T value)
+    public <T> void add(Key<T> key, T value)
     {
         validateKey(key);
         
-        getStore().put(key, value);
+        getStore().put(key, Optional.ofNullable(value));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> boolean exists(ApplicationContextKey<T> key) 
+    public <T> boolean exists(Key<T> key) 
     {
         validateKey(key);
         
@@ -150,11 +136,11 @@ public class ApplicationContextImpl implements ApplicationContext {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T fetch(ApplicationContextKey<T> key) 
+    public <T> T fetch(Key<T> key) 
     {
         validateKey(key);
         
-        return (T)getStore().get(key);
+        return Optional.ofNullable(getStore().get(key)).flatMap(o->o.map(ob->(T)ob)).orElse(null);
     }
 
     /**
@@ -162,11 +148,11 @@ public class ApplicationContextImpl implements ApplicationContext {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T erase(ApplicationContextKey<T> key)
+    public <T> T erase(Key<T> key)
     {
         validateKey(key);
         
-        return (T)getStore().remove(key);
+        return Optional.ofNullable(getStore().remove(key)).flatMap(o->o.map(ob->(T)ob)).orElse(null);
     }
     
     /**
@@ -182,7 +168,7 @@ public class ApplicationContextImpl implements ApplicationContext {
      * {@inheritDoc}
      */
     @Override
-    public Set<ApplicationContextKey<?>> keySet()
+    public Set<Key<?>> keySet()
     {
         return Collections.unmodifiableSet(getStore().keySet());
     } 
@@ -191,9 +177,9 @@ public class ApplicationContextImpl implements ApplicationContext {
     @Override
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
-        Set<ApplicationContextKey<?>> keysOther = other.keySet();
+        Set<Key<?>> keysOther = other.keySet();
         
-        for(ApplicationContextKey keyOther: keysOther)
+        for(Key keyOther: keysOther)
         {
             if(!isKeyValid(keyOther))
             {
@@ -212,22 +198,5 @@ public class ApplicationContextImpl implements ApplicationContext {
                 addIfNotPresent(keyOther, newValue);
             }
         }
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(ApplicationContext other) 
-    {
-        if(other == null)
-            return false;
-        
-        if(!(other instanceof ApplicationContextImpl))
-            return false;
-        
-        return this.name.equals(other.getName())
-                && this.permittedKeys.equals(other.getPermittedKeys())
-                && this.getStore().equals(((ApplicationContextImpl)other).getStore());
     }
 }

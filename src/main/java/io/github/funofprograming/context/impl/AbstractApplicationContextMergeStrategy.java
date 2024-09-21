@@ -1,10 +1,10 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.Objects;
 import java.util.Set;
 
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ApplicationContextMergeStrategy;
+import io.github.funofprograming.context.Key;
+import io.github.funofprograming.context.ApplicationContextMergeStrategy;
 
 /**
  * Abstract implementation of {@linkplain ApplicationContextMergeStrategy}
@@ -15,14 +15,14 @@ import io.fop.context.ApplicationContextMergeStrategy;
 public abstract class AbstractApplicationContextMergeStrategy implements ApplicationContextMergeStrategy {
     
     
-    protected final Set<ApplicationContextKey<?>> keys;
+    protected final Set<Key<?>> keys;
     
     /**
      * Initialize with a set of keys for whom this strategy is to be applied. If null set passed then strategy is applicable for all keys
      * 
      * @param keys
      */
-    protected AbstractApplicationContextMergeStrategy(Set<ApplicationContextKey<?>> keys)
+    protected AbstractApplicationContextMergeStrategy(Set<Key<?>> keys)
     {
         this.keys = keys;
     }
@@ -32,7 +32,7 @@ public abstract class AbstractApplicationContextMergeStrategy implements Applica
         return Objects.nonNull(keys);
     }
     
-    protected boolean keyAvailable(ApplicationContextKey<?> key)
+    protected boolean keyAvailable(Key<?> key)
     {
         return keySetAvailable()?keys.contains(key):false;
     }

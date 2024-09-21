@@ -1,15 +1,16 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.Set;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextHolderStrategy;
-import io.fop.context.ApplicationContextKey;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.ApplicationContextHolderStrategy;
+import io.github.funofprograming.context.Key;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApplicationContextHolder
 {
-    private ApplicationContextHolder() {} //all static methods so should not be initializable
-    
     private static final ApplicationContextHolderStrategy globalContextHolderStrategy = new GlobalContextHolderStrategy();
     
     private static final ApplicationContextHolderStrategy threadLocalContextHolderStrategy = new ThreadLocalContextHolderStrategy();
@@ -33,7 +34,7 @@ public class ApplicationContextHolder
      * @param name
      * @return
      */
-    public static ApplicationContext getGlobalContext(String name, Set<ApplicationContextKey<?>> permittedKeys)
+    public static ApplicationContext getGlobalContext(String name, Set<Key<?>> permittedKeys)
     {
         return getContext(name, permittedKeys, globalContextHolderStrategy);
     }
@@ -59,6 +60,28 @@ public class ApplicationContextHolder
     }
     
     /**
+     * Check if Global context with given name exists
+     * 
+     * @param name
+     * @return
+     */
+    public static boolean existsGlobalContext(String name)
+    {
+	return existsContext(name, globalContextHolderStrategy);
+    }
+    
+    /**
+     * Check if Global context with given name and permittedKeys exists
+     * 
+     * @param name
+     * @return
+     */
+    public static boolean existsGlobalContext(String name,  Set<Key<?>> permittedKeys)
+    {
+	return existsContext(name, permittedKeys, globalContextHolderStrategy);
+    }
+    
+    /**
      * Get a ThreadLocal context for given name. If not available then create one, set in holder and return back.
      * 
      * @param name
@@ -75,7 +98,7 @@ public class ApplicationContextHolder
      * @param name
      * @return
      */
-    public static ApplicationContext getThreadLocalContext(String name, Set<ApplicationContextKey<?>> permittedKeys)
+    public static ApplicationContext getThreadLocalContext(String name, Set<Key<?>> permittedKeys)
     {
         return getContext(name, permittedKeys, threadLocalContextHolderStrategy);
     }
@@ -101,6 +124,28 @@ public class ApplicationContextHolder
     }
     
     /**
+     * Check if ThreadLocal context with given name exists
+     * 
+     * @param name
+     * @return
+     */
+    public static boolean existsThreadLocalContext(String name)
+    {
+	return existsContext(name, threadLocalContextHolderStrategy);
+    }
+    
+    /**
+     * Check if ThreadLocal context with given name and permittedKeys exists
+     * 
+     * @param name
+     * @return
+     */
+    public static boolean existsThreadLocalContext(String name,  Set<Key<?>> permittedKeys)
+    {
+	return existsContext(name, permittedKeys, threadLocalContextHolderStrategy);
+    }
+    
+    /**
      * Get a InheritableThreadLocal context for given name. If not available then create one, set in holder and return back.
      * 
      * @param name
@@ -117,7 +162,7 @@ public class ApplicationContextHolder
      * @param name
      * @return
      */
-    public static ApplicationContext getInheritableThreadLocalContext(String name, Set<ApplicationContextKey<?>> permittedKeys)
+    public static ApplicationContext getInheritableThreadLocalContext(String name, Set<Key<?>> permittedKeys)
     {
         return getContext(name, permittedKeys, inheritableThreadLocalContextHolderStrategy);
     }
@@ -143,13 +188,35 @@ public class ApplicationContextHolder
     }
     
     /**
+     * Check if InheritableThreadLocal context with given name exists
+     * 
+     * @param name
+     * @return
+     */
+    public static boolean existsInheritableThreadLocalContext(String name)
+    {
+	return existsContext(name, inheritableThreadLocalContextHolderStrategy);
+    }
+    
+    /**
+     * Check if InheritableThreadLocal context with given name and permittedKeys exists
+     * 
+     * @param name
+     * @return
+     */
+    public static boolean existsInheritableThreadLocalContext(String name,  Set<Key<?>> permittedKeys)
+    {
+	return existsContext(name, permittedKeys, inheritableThreadLocalContextHolderStrategy);
+    }
+    
+    /**
      * Get a context for given name. If not available then create one, set in holder and return back.
      * 
      * @param name
      * @param applicationContextHolderStrategy
      * @return
      */
-    public static ApplicationContext getContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy) 
+    private static ApplicationContext getContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy) 
     {
         return applicationContextHolderStrategy.getContext(name);
     }
@@ -161,7 +228,7 @@ public class ApplicationContextHolder
      * @param applicationContextHolderStrategy
      * @return
      */
-    public static ApplicationContext getContext(String name, Set<ApplicationContextKey<?>> permittedKeys, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    private static ApplicationContext getContext(String name, Set<Key<?>> permittedKeys, ApplicationContextHolderStrategy applicationContextHolderStrategy)
     {
         return applicationContextHolderStrategy.getContext(name, permittedKeys);
     }
@@ -172,7 +239,7 @@ public class ApplicationContextHolder
      * @param applicationContext
      * @param applicationContextHolderStrategy
      */
-    public static void setContext(ApplicationContext applicationContext, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    private static void setContext(ApplicationContext applicationContext, ApplicationContextHolderStrategy applicationContextHolderStrategy)
     {
         applicationContextHolderStrategy.setContext(applicationContext);
     }
@@ -183,8 +250,30 @@ public class ApplicationContextHolder
      * @param name
      * @param applicationContextHolderStrategy
      */
-    public static ApplicationContext clearContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    private static ApplicationContext clearContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy)
     {
         return applicationContextHolderStrategy.clearContext(name);
+    }
+    
+    /**
+     * Check if context with given name exists
+     * 
+     * @param name
+     * @return
+     */
+    private static boolean existsContext(String name, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    {
+	return applicationContextHolderStrategy.existsContext(name);
+    }
+    
+    /**
+     * Check if context with given name and permittedKeys exists
+     * 
+     * @param name
+     * @return
+     */
+    private static boolean existsContext(String name, Set<Key<?>> permittedKeys, ApplicationContextHolderStrategy applicationContextHolderStrategy)
+    {
+	return applicationContextHolderStrategy.existsContext(name, permittedKeys);
     }
 }

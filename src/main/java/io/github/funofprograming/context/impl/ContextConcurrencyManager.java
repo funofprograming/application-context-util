@@ -1,6 +1,6 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -22,7 +22,7 @@ class ContextConcurrencyManager
      * @param tryDurationMilliseconds
      * @return
      */
-    public static ContextConcurrencyManager getInstance()
+    static ContextConcurrencyManager getInstance()
     {
         return new ContextConcurrencyManager();
     }
@@ -44,7 +44,7 @@ class ContextConcurrencyManager
      * @param timeout
      * @return
      */
-    public boolean acquireReadLock(Long timeout) 
+    boolean acquireReadLock(Long timeout) 
     {
         boolean locked = false;
         try 
@@ -64,7 +64,7 @@ class ContextConcurrencyManager
      * 
      * @return
      */
-    public boolean acquireReadLock() 
+    boolean acquireReadLock() 
     {
         return acquireReadLock(null);
     }
@@ -72,7 +72,7 @@ class ContextConcurrencyManager
     /**
      * Unlock read lock from ReadWriteLock. This will follow semantics of a {@linkplain ReadWriteLock}
      */
-    public void releaseReadLock()
+    void releaseReadLock()
     {
         readWriteLock.readLock().unlock();
     }
@@ -83,7 +83,7 @@ class ContextConcurrencyManager
      * @param timeout
      * @return
      */
-    public boolean acquireWriteLock(Long timeout) 
+    boolean acquireWriteLock(Long timeout) 
     {
         boolean locked = false;
         try 
@@ -103,7 +103,7 @@ class ContextConcurrencyManager
      * 
      * @return
      */
-    public boolean acquireWriteLock() 
+    boolean acquireWriteLock() 
     {
         return acquireWriteLock(null);
     }
@@ -111,13 +111,13 @@ class ContextConcurrencyManager
     /**
      * Unlock write lock from ReadWriteLock. This will follow semantics of a {@linkplain ReadWriteLock}
      */
-    public void releaseWriteLock()
+    void releaseWriteLock()
     {
         readWriteLock.writeLock().unlock();
     }
     
     private long resolveTryDurationMilliseconds(Long tryDurationMilliseconds) {
         
-        return Objects.nonNull(tryDurationMilliseconds) ? tryDurationMilliseconds : DEFAULT_TRY_DURATION_MILLISECONDS;
+        return Optional.ofNullable(tryDurationMilliseconds).orElse(DEFAULT_TRY_DURATION_MILLISECONDS);
     }
 }

@@ -2,60 +2,25 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.fop</groupId>
+	<groupId>io.github.funofprograming</groupId>
 	<artifactId>application-context-util</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>Application Context Util</name>
 	<description>Utility to manage contexts in application</description>
-	<url>https://github.com/akshayjain7983/application-context-util</url>
+	<url>https://github.com/funofprograming/application-context-util</url>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
+		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+		<versions-maven-plugin.version>2.16.1</versions-maven-plugin.version>
+		<build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
 	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
-				<configuration>
-					<release>${java.version}</release>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.3.0</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.5.0</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -73,6 +38,100 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<release>${java.version}</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>${versions-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>major</id>
+						<goals>
+							<goal>set</goal>
+						</goals>
+						<configuration>
+							<generateBackupPoms>false</generateBackupPoms>
+							<newVersion>
+								${parsedVersion.nextMajorVersion}.0.0</newVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>minor</id>
+						<goals>
+							<goal>set</goal>
+						</goals>
+						<configuration>
+							<generateBackupPoms>false</generateBackupPoms>
+							<newVersion>
+								${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0</newVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>patch</id>
+						<goals>
+							<goal>set</goal>
+						</goals>
+						<configuration>
+							<generateBackupPoms>false</generateBackupPoms>
+							<newVersion>
+								${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}</newVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${build-helper-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>default-cli</id>
+						<goals>
+							<goal>parse-version</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
@@ -83,15 +142,12 @@
 	<developers>
 		<developer>
 			<name>Akshay Jain</name>
-			<email>akshay.jain.7983@gmail.com</email>
 			<organization>Fun of Programing</organization>
-			<organizationUrl>http://funofprograming.wordpress.com</organizationUrl>
+			<organizationUrl>https://funofprograming.github.io</organizationUrl>
 		</developer>
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/akshayjain7983/application-context-util.git</connection>
-		<developerConnection>scm:git:ssh://github.com:akshayjain7983/application-context-util.git</developerConnection>
-		<url>http://github.com/akshayjain7983/application-context-util/tree/master</url>
+		<url>http://github.com/funofprograming/application-context-util/tree/master</url>
 	</scm>
 </project>

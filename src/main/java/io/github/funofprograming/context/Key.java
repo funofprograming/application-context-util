@@ -1,4 +1,4 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.io.Serializable;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor(staticName = "of")
 @EqualsAndHashCode(of = {"keyName"})
-public class ApplicationContextKey<T> implements Serializable
+public class Key<T> implements Serializable
 {
     private static final long serialVersionUID = -1622914480860236052L;
     
@@ -28,5 +28,19 @@ public class ApplicationContextKey<T> implements Serializable
     /**
      * Type of key as {@linkplain Class}
      */
-    private final ParameterizedTypeReference<T> valueType;
+    private final KeyType<T> valueType;
+    
+    public static <T> Key<T> of(String keyName, Class<T> type)
+    {
+        return Key.<T>of(keyName, KeyType.<T>of(type));
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() 
+    {
+        return keyName+"<"+valueType+">";
+    }
 }

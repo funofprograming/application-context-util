@@ -1,9 +1,9 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.Set;
 
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ApplicationContextMergeStrategy;
+import io.github.funofprograming.context.Key;
+import io.github.funofprograming.context.ApplicationContextMergeStrategy;
 
 /**
  * {@linkplain ApplicationContextMergeStrategy} implementation which ignores the newValue. 
@@ -22,7 +22,7 @@ public class ApplicationContextMergeIgnoreStrategy extends AbstractApplicationCo
         super(null);
     }
     
-    public ApplicationContextMergeIgnoreStrategy(Set<ApplicationContextKey<?>> keys)
+    public ApplicationContextMergeIgnoreStrategy(Set<Key<?>> keys)
     {
         super(keys);
     }
@@ -31,7 +31,7 @@ public class ApplicationContextMergeIgnoreStrategy extends AbstractApplicationCo
      * {@inheritDoc}
      */
     @Override
-    public <T> T merge(ApplicationContextKey<T> key, T oldValue, T newValue)
+    public <T> T merge(Key<T> key, T oldValue, T newValue)
     {
         boolean keySetAvailable = super.keySetAvailable();
         T mergeValue = null;

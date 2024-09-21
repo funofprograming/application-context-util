@@ -1,7 +1,9 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+
+import lombok.EqualsAndHashCode;
 
 /**
  * The purpose of this class is to enable capturing and passing a generic
@@ -9,7 +11,7 @@ import java.lang.reflect.Type;
  * you need to create a subclass (ideally as anonymous inline class) as follows:
  *
  * <pre class="code">
- * ParameterizedTypeReference&lt;List&lt;String&gt;&gt; typeRef = new ParameterizedTypeReference&lt;List&lt;String&gt;&gt;() {};
+ * KeyType&lt;List&lt;String&gt;&gt; typeRef = new KeyType&lt;List&lt;String&gt;&gt;() {};
  * </pre>
  *
  * <p>The resulting {@code typeRef} instance can then be used to obtain a {@link Type}
@@ -17,14 +19,14 @@ import java.lang.reflect.Type;
  * For more information on "super type tokens" see the link to Neal Gafter's blog post.
  *
  * This is inspired by Spring project
- * @see <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/ParameterizedTypeReference.java">ParameterizedTypeReference</a>
+ * @see <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/ParameterizedTypeReference.java">KeyType</a>
  */
-
-public abstract class ParameterizedTypeReference<T>
+@EqualsAndHashCode
+public abstract class KeyType<T>
 {
     private final Type type;
 
-    protected ParameterizedTypeReference()
+    protected KeyType()
     {
         Class<?> parameterizedTypeReferenceSubclass = findParameterizedTypeReferenceSubclass(getClass());
         Type type = parameterizedTypeReferenceSubclass.getGenericSuperclass();
@@ -35,47 +37,24 @@ public abstract class ParameterizedTypeReference<T>
         this.type = actualTypeArguments[0];
     }
 
-    protected ParameterizedTypeReference(Type type)
+    protected KeyType(Type type)
     {
         this.type = type;
     }
 
-    public Type getType()
-    {
-        return this.type;
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        return (this == other || (other instanceof ParameterizedTypeReference && this.type.equals(((ParameterizedTypeReference<?>) other).type)));
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return this.type.hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ParameterizedTypeReference<" + this.type + ">";
-    }
-
     /**
-     * Build a {@code ParameterizedTypeReference} wrapping the given type.
+     * Build a {@code KeyType} wrapping the given type.
      * 
      * @param type
      *                 a generic type (possibly obtained via reflection, e.g. from
      *                 {@link java.lang.reflect.Method#getGenericReturnType()})
      * @return a corresponding reference which may be passed into
-     *         {@code ParameterizedTypeReference}-accepting methods
+     *         {@code KeyType}-accepting methods
      * @since 4.3.12
      */
-    public static <T> ParameterizedTypeReference<T> forType(Type type)
+    public static <T> KeyType<T> of(Type type)
     {
-        return new ParameterizedTypeReference<T>(type)
+        return new KeyType<T>(type)
         {
         };
     }
@@ -85,9 +64,9 @@ public abstract class ParameterizedTypeReference<T>
         Class<?> parent = child.getSuperclass();
         if (Object.class == parent)
         {
-            throw new IllegalStateException("Expected ParameterizedTypeReference superclass");
+            throw new IllegalStateException("Expected KeyType superclass");
         }
-        else if (ParameterizedTypeReference.class == parent)
+        else if (KeyType.class == parent)
         {
             return child;
         }
@@ -96,4 +75,13 @@ public abstract class ParameterizedTypeReference<T>
             return findParameterizedTypeReferenceSubclass(parent);
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() 
+    {
+        return type.getTypeName();
+    } 
 }

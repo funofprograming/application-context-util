@@ -1,4 +1,4 @@
-package io.fop.context;
+package io.github.funofprograming.context;
 
 /**
  * Merge strategy for merging any two context
@@ -17,5 +17,5 @@ public interface ApplicationContextMergeStrategy
      * @param newValue typically the value from context which is merged
      * @return
      */
-    public <T> T merge(ApplicationContextKey<T> key, T oldValue, T newValue); 
+    public <T> T merge(Key<T> key, T oldValue, T newValue); 
 }

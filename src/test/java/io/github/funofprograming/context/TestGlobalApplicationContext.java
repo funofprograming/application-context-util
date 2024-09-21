@@ -1,4 +1,4 @@
-package fop.context.test;
+package io.github.funofprograming.context;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -16,28 +16,25 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ParameterizedTypeReference;
-import io.fop.context.impl.ApplicationContextHolder;
-import io.fop.context.impl.ConcurrentApplicationContextImpl;
-import io.fop.context.impl.InvalidContextException;
-import io.fop.context.impl.InvalidKeyException;
+import io.github.funofprograming.context.impl.ApplicationContextHolder;
+import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
+import io.github.funofprograming.context.impl.InvalidContextException;
+import io.github.funofprograming.context.impl.InvalidKeyException;
 
 public class TestGlobalApplicationContext
 {
     private String contextName;
-    private ApplicationContextKey<String> validKey;
-    private ApplicationContextKey<String> invalidKey;
-    private Set<ApplicationContextKey<?>> permittedKeys;
+    private Key<String> validKey;
+    private Key<String> invalidKey;
+    private Set<Key<?>> permittedKeys;
     private ThreadPoolExecutor executorService;
     
     @Before
     public void setUp() throws Exception
     {
         contextName = "TestGlobalApplicationContext";
-        validKey = ApplicationContextKey.of("ValidKey", new ParameterizedTypeReference<String>() {});
-        invalidKey = ApplicationContextKey.of("InvalidKey", new ParameterizedTypeReference<String>() {});
+        validKey = Key.of("ValidKey", String.class);
+        invalidKey = Key.of("InvalidKey", String.class);
         permittedKeys = new HashSet<>(Arrays.asList(validKey));
         executorService = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         executorService.allowCoreThreadTimeOut(true);
@@ -86,7 +83,7 @@ public class TestGlobalApplicationContext
         Thread.sleep(1000);
         
         CompletableFuture<Void> future2 = CompletableFuture.runAsync(()->{
-            Set<ApplicationContextKey<?>> permittedKeysInvalid = new HashSet<>(Arrays.asList(invalidKey));
+            Set<Key<?>> permittedKeysInvalid = new HashSet<>(Arrays.asList(invalidKey));
             ApplicationContextHolder.getGlobalContext(contextName, permittedKeysInvalid);
         });        
         

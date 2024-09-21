@@ -1,12 +1,14 @@
-package io.fop.context.impl;
+package io.github.funofprograming.context.impl;
 
 import java.util.ConcurrentModificationException;
 import java.util.Set;
 
-import io.fop.context.ApplicationContext;
-import io.fop.context.ApplicationContextKey;
-import io.fop.context.ApplicationContextMergeStrategy;
-import io.fop.context.ConcurrentApplicationContext;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.Key;
+import io.github.funofprograming.context.ApplicationContextMergeStrategy;
+import io.github.funofprograming.context.ConcurrentApplicationContext;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 /**
  * Thread safe extension of {@linkplain ApplicationContextImpl} by implementing {@linkplain ConcurrentApplicationContextImpl}
@@ -16,6 +18,7 @@ import io.fop.context.ConcurrentApplicationContext;
  */
 public class ConcurrentApplicationContextImpl extends ApplicationContextImpl implements ConcurrentApplicationContext
 {
+    @Getter(AccessLevel.PROTECTED)
     private final ContextConcurrencyManager contextConcurrencyManager;
 
     /**
@@ -29,7 +32,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     /**
      * {@inheritDoc}
      */
-    public ConcurrentApplicationContextImpl(String name, Set<ApplicationContextKey<?>> permittedKeys) 
+    public ConcurrentApplicationContextImpl(String name, Set<Key<?>> permittedKeys) 
     {
         super(name, permittedKeys);
         this.contextConcurrencyManager = ContextConcurrencyManager.getInstance();
@@ -39,7 +42,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value)
+    public <T> void addIfNotPresent(Key<T> key, T value)
     {
         if(!getContextConcurrencyManager().acquireWriteLock())
         {
@@ -60,7 +63,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> void addIfNotPresent(ApplicationContextKey<T> key, T value, Long timeout) 
+    public <T> void addIfNotPresent(Key<T> key, T value, Long timeout) 
     {
         if(!getContextConcurrencyManager().acquireWriteLock(timeout))
         {
@@ -81,7 +84,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value) 
+    public <T> T addWithOverwrite(Key<T> key, T value) 
     {
         if(!getContextConcurrencyManager().acquireWriteLock())
         {
@@ -102,7 +105,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> T addWithOverwrite(ApplicationContextKey<T> key, T value, Long timeout) 
+    public <T> T addWithOverwrite(Key<T> key, T value, Long timeout) 
     {
         if(!getContextConcurrencyManager().acquireWriteLock(timeout))
         {
@@ -123,7 +126,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> void add(ApplicationContextKey<T> key, T value)
+    public <T> void add(Key<T> key, T value)
     {
         if(!getContextConcurrencyManager().acquireWriteLock())
         {
@@ -144,7 +147,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> void add(ApplicationContextKey<T> key, T value, Long timeout) 
+    public <T> void add(Key<T> key, T value, Long timeout) 
     {
         if(!getContextConcurrencyManager().acquireWriteLock(timeout))
         {
@@ -165,7 +168,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> boolean exists(ApplicationContextKey<T> key) 
+    public <T> boolean exists(Key<T> key) 
     {
         if(!getContextConcurrencyManager().acquireReadLock())
         {
@@ -186,7 +189,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> boolean exists(ApplicationContextKey<T> key, Long timeout) 
+    public <T> boolean exists(Key<T> key, Long timeout) 
     {
         if(!getContextConcurrencyManager().acquireReadLock(timeout))
         {
@@ -207,7 +210,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> T fetch(ApplicationContextKey<T> key) 
+    public <T> T fetch(Key<T> key) 
     {
         if(!getContextConcurrencyManager().acquireReadLock())
         {
@@ -228,7 +231,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> T fetch(ApplicationContextKey<T> key, Long timeout) 
+    public <T> T fetch(Key<T> key, Long timeout) 
     {
         if(!getContextConcurrencyManager().acquireReadLock(timeout))
         {
@@ -249,7 +252,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> T erase(ApplicationContextKey<T> key) 
+    public <T> T erase(Key<T> key) 
     {
         if(!getContextConcurrencyManager().acquireWriteLock())
         {
@@ -270,7 +273,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
      * {@inheritDoc}
      */
     @Override
-    public <T> T erase(ApplicationContextKey<T> key, Long timeout) 
+    public <T> T erase(Key<T> key, Long timeout) 
     {
         if(!getContextConcurrencyManager().acquireWriteLock(timeout))
         {
@@ -314,7 +317,10 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public void clear(Long timeout) 
     {
-        getContextConcurrencyManager().acquireWriteLock(timeout);
+        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
+        {
+            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
+        }
         
         try
         {
@@ -329,7 +335,10 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, Long timeout)
     {
-        getContextConcurrencyManager().acquireWriteLock(timeout);
+        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
+        {
+            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
+        }
         
         try
         {
@@ -345,14 +354,5 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
         this.merge(other, mergeStrategy, null);
-    }
-
-    /**
-     * 
-     * @return concurrency manager used by this context
-     */
-    protected ContextConcurrencyManager getContextConcurrencyManager()
-    {
-        return contextConcurrencyManager;
     }
 }
