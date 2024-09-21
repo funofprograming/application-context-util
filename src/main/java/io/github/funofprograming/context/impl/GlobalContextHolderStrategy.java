@@ -18,6 +18,16 @@ public class GlobalContextHolderStrategy extends AbstractApplicationContextHolde
         super.validateContext(applicationContext);
         assert applicationContext instanceof ConcurrentApplicationContext : "applicationContext must be of type ConcurrentApplicationContext as Global holder supports only instances of ConcurrentApplicationContext";
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<ConcurrentApplicationContext> supportedApplicationContextType()
+    {
+	return ConcurrentApplicationContext.class;
+    }
 
     /**
      * {@inheritDoc}

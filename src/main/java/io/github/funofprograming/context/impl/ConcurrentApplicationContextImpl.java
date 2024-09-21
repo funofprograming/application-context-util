@@ -4,9 +4,11 @@ import java.util.ConcurrentModificationException;
 import java.util.Set;
 
 import io.github.funofprograming.context.ApplicationContext;
-import io.github.funofprograming.context.Key;
 import io.github.funofprograming.context.ApplicationContextMergeStrategy;
 import io.github.funofprograming.context.ConcurrentApplicationContext;
+import io.github.funofprograming.context.Key;
+import io.github.funofprograming.context.impl.ContextConcurrencyManager.AcquiredLock;
+import io.github.funofprograming.context.impl.ContextConcurrencyManager.LockAutoCloseable;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -44,19 +46,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> void addIfNotPresent(Key<T> key, T value)
     {
-        if(!getContextConcurrencyManager().acquireWriteLock())
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            super.addIfNotPresent(key, value);
-        } 
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
-        }
+        addIfNotPresent(key, value, null);
     }
     
     /**
@@ -65,19 +55,10 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> void addIfNotPresent(Key<T> key, T value, Long timeout) 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
+	try(AcquiredLock lock = setupWriteAccess(timeout))
         {
             super.addIfNotPresent(key, value);
         } 
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
-        }
     }
 
     /**
@@ -86,19 +67,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> T addWithOverwrite(Key<T> key, T value) 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock())
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            return super.addWithOverwrite(key, value);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
-        }
+        return addWithOverwrite(key, value, null);
     }
 
     /**
@@ -107,18 +76,9 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> T addWithOverwrite(Key<T> key, T value, Long timeout) 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
+        try(AcquiredLock lock = setupWriteAccess(timeout))
         {
             return super.addWithOverwrite(key, value);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
         }
     }
 
@@ -128,19 +88,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> void add(Key<T> key, T value)
     {
-        if(!getContextConcurrencyManager().acquireWriteLock())
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            super.add(key, value);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
-        }
+        add(key, value, null);
     }
 
     /**
@@ -149,18 +97,9 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> void add(Key<T> key, T value, Long timeout) 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
+	try(AcquiredLock lock = setupWriteAccess(timeout))
         {
             super.add(key, value);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
         }
     }
 
@@ -170,19 +109,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> boolean exists(Key<T> key) 
     {
-        if(!getContextConcurrencyManager().acquireReadLock())
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            return super.exists(key);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseReadLock();
-        }
+        return exists(key, null);
     }
 
     /**
@@ -191,18 +118,9 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> boolean exists(Key<T> key, Long timeout) 
     {
-        if(!getContextConcurrencyManager().acquireReadLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
+	try(AcquiredLock lock = setupReadAccess(timeout))
         {
             return super.exists(key);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseReadLock();
         }
     }
 
@@ -212,19 +130,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> T fetch(Key<T> key) 
     {
-        if(!getContextConcurrencyManager().acquireReadLock())
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            return super.fetch(key);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseReadLock();
-        }
+        return fetch(key, null);
     }
 
     /**
@@ -233,18 +139,9 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> T fetch(Key<T> key, Long timeout) 
     {
-        if(!getContextConcurrencyManager().acquireReadLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
+	try(AcquiredLock lock = setupReadAccess(timeout))
         {
             return super.fetch(key);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseReadLock();
         }
     }
 
@@ -254,19 +151,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> T erase(Key<T> key) 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock())
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            return super.erase(key);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
-        }
+        return erase(key, null);
     }
     
     /**
@@ -275,18 +160,9 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public <T> T erase(Key<T> key, Long timeout) 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
+	try(AcquiredLock lock = setupWriteAccess(timeout))
         {
             return super.erase(key);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
         }
     }
     
@@ -296,19 +172,7 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public void clear() 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock())
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            super.clear();
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
-        }
+        clear(null);
     }
     
     /**
@@ -317,36 +181,9 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     @Override
     public void clear(Long timeout) 
     {
-        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
+	try(AcquiredLock lock = setupWriteAccess(timeout))
         {
             super.clear();
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
-        }
-    }
-    
-    @Override
-    public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, Long timeout)
-    {
-        if(!getContextConcurrencyManager().acquireWriteLock(timeout))
-        {
-            throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
-        }
-        
-        try
-        {
-            super.merge(other, mergeStrategy);
-        }
-        finally
-        {
-            getContextConcurrencyManager().releaseWriteLock();
         }
     }
 
@@ -354,5 +191,36 @@ public class ConcurrentApplicationContextImpl extends ApplicationContextImpl imp
     public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy)
     {
         this.merge(other, mergeStrategy, null);
+    }
+    
+    @Override
+    public void merge(ApplicationContext other, ApplicationContextMergeStrategy mergeStrategy, Long timeout)
+    {
+	try(AcquiredLock lock = setupWriteAccess(timeout))
+        {
+            super.merge(other, mergeStrategy);
+        }
+    }
+    
+    private LockAutoCloseable setupWriteAccess(Long timeout)
+    {
+	LockAutoCloseable writeLockCloseable = getContextConcurrencyManager().acquireWriteLockCloseable(timeout);
+	verifyLockAutoCloseable(writeLockCloseable);
+	return writeLockCloseable;
+    }
+    
+    private LockAutoCloseable setupReadAccess(Long timeout)
+    {
+	LockAutoCloseable readLockCloseable = getContextConcurrencyManager().acquireReadLockCloseable(timeout);
+	verifyLockAutoCloseable(readLockCloseable);
+	return readLockCloseable;
+    }
+    
+    private void verifyLockAutoCloseable(LockAutoCloseable lockAutoCloseable)
+    {
+	if(!lockAutoCloseable.isLocked())
+	{
+	    throw new ConcurrentModificationException("Some other thread modifying this context at the moment");
+	}
     }
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import io.github.funofprograming.context.ApplicationContext;
 import io.github.funofprograming.context.ApplicationContextHolderStrategy;
+import io.github.funofprograming.context.ConcurrentApplicationContext;
 import io.github.funofprograming.context.Key;
 
 /**
@@ -35,7 +36,7 @@ public abstract class AbstractApplicationContextHolderStrategy implements Applic
     {
         if(!contextContainedInStore(name)) 
         {
-            setContext(new ConcurrentApplicationContextImpl(name, permittedKeys));
+            setContext(createApplicationContext(name, permittedKeys));
         }
         else 
         {
@@ -50,6 +51,23 @@ public abstract class AbstractApplicationContextHolderStrategy implements Applic
         }
         
         return getContextFromStore(name);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T extends ApplicationContext> T createApplicationContext(String name, Set<Key<?>> permittedKeys)
+    {
+	Class<T> supportedApplicationContextType = supportedApplicationContextType();
+	
+	if(ConcurrentApplicationContext.class.isAssignableFrom(supportedApplicationContextType))
+	{
+	    return (T) new ConcurrentApplicationContextImpl(name, permittedKeys);
+	}
+	else if(ApplicationContext.class.isAssignableFrom(supportedApplicationContextType))
+	{
+	    return (T) new ApplicationContextImpl(name, permittedKeys);
+	}
+	
+	throw new InvalidContextException("Invalid context type : "+supportedApplicationContextType);
     }
 
     /**
@@ -105,7 +123,6 @@ public abstract class AbstractApplicationContextHolderStrategy implements Applic
 	
 	return false;
     }
-    
     
     /**
      * Check whether context contained in underlying store

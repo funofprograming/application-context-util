@@ -7,6 +7,15 @@ import io.github.funofprograming.context.impl.InvalidKeyException;
 
 public interface ApplicationContextHolderStrategy
 {
+    
+    /**
+     * Get type of context supported by this holder strategy
+     * 
+     * @param <T>
+     * @return
+     */
+    public <T extends ApplicationContext> Class<T> supportedApplicationContextType();
+    
     /**
      * Get a context for given name. If not available then create one, set in holder and return back.
      * 

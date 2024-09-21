@@ -18,6 +18,15 @@ public class ThreadLocalContextHolderStrategy extends AbstractApplicationContext
     {
         return LOCAL_CONTEXT_STORE;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<ApplicationContext> supportedApplicationContextType()
+    {
+	return ApplicationContext.class;
+    }
 
     /**
      * {@inheritDoc}
