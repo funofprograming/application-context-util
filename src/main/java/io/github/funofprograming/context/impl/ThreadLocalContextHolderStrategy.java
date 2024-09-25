@@ -22,10 +22,11 @@ public class ThreadLocalContextHolderStrategy extends AbstractApplicationContext
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public Class<ApplicationContext> supportedApplicationContextType()
+    public <T extends ApplicationContext> Class<T> supportedApplicationContextType()
     {
-	return ApplicationContext.class;
+	return (Class<T>) ApplicationContext.class;
     }
 
     /**

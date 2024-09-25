@@ -24,9 +24,9 @@ public class GlobalContextHolderStrategy extends AbstractApplicationContextHolde
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Class<ConcurrentApplicationContext> supportedApplicationContextType()
+    public <T extends ApplicationContext> Class<T> supportedApplicationContextType()
     {
-	return ConcurrentApplicationContext.class;
+	return (Class<T>) ConcurrentApplicationContext.class;
     }
 
     /**
