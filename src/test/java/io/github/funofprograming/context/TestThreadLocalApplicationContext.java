@@ -1,7 +1,8 @@
 package io.github.funofprograming.context;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,9 +13,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.github.funofprograming.context.impl.ApplicationContextHolder;
 import io.github.funofprograming.context.impl.ApplicationContextImpl;
@@ -29,7 +30,7 @@ public class TestThreadLocalApplicationContext
     private Set<Key<?>> permittedKeys;
     private ThreadPoolExecutor executorService;
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         contextName = "TestThreadLocalApplicationContext";
@@ -40,7 +41,7 @@ public class TestThreadLocalApplicationContext
         executorService.allowCoreThreadTimeOut(true);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         ApplicationContextHolder.clearThreadLocalContext(contextName);
@@ -69,24 +70,23 @@ public class TestThreadLocalApplicationContext
         assertEquals(valueSetInThread1, future1.get());
     }
 
-    @Test(expected = InvalidContextException.class)
+    @Test
     public void testGetThreadLocalContextWithPermittedKeys() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
         ApplicationContext localContext = ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeys);
         localContext.add(validKey, valueSetInThread1);
         Set<Key<?>> permittedKeysInvalid = new HashSet<>(Arrays.asList(invalidKey));
-        ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeysInvalid);
+        assertThrows(InvalidContextException.class, ()->ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeysInvalid));
     }
     
-    @Test(expected = InvalidKeyException.class)
+    @Test
     public void testGetThreadLocalContextWithPermittedKeysInvalidKey() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
         ApplicationContext localContext = ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeys);
         localContext.add(validKey, valueSetInThread1);
-        localContext = ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeys);
-        localContext.fetch(invalidKey);
+        assertThrows(InvalidKeyException.class, ()->ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeys).fetch(invalidKey));
     }
 
     @Test
@@ -125,5 +125,4 @@ public class TestThreadLocalApplicationContext
         
         assertNull(val);
     }
-
 }

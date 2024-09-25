@@ -1,7 +1,9 @@
 package io.github.funofprograming.context;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,14 +11,15 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.github.funofprograming.context.impl.ApplicationContextHolder;
 import io.github.funofprograming.context.impl.ApplicationContextImpl;
@@ -31,7 +34,7 @@ public class TestInheritableThreadLocalApplicationContext
     private Set<Key<?>> permittedKeys;
     private ThreadPoolExecutor executorService;
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         contextName = "TestThreadLocalApplicationContext";
@@ -42,7 +45,7 @@ public class TestInheritableThreadLocalApplicationContext
         executorService.allowCoreThreadTimeOut(true);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         ApplicationContextHolder.clearInheritableThreadLocalContext(contextName);
@@ -74,51 +77,39 @@ public class TestInheritableThreadLocalApplicationContext
         assertEquals(valueSetInThread1, future1.get());
     }
 
-    @Test(expected = InvalidContextException.class)
+    @Test
     public void testGetInheritableThreadLocalContextWithPermittedKeys() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
         
         ApplicationContext localContext = ApplicationContextHolder.getInheritableThreadLocalContext(contextName, permittedKeys);
         localContext.add(validKey, valueSetInThread1);
-        Callable<String> childProcess = ()->{
+        
+        CompletableFuture<String> ft = CompletableFuture.supplyAsync(()->{
             Set<Key<?>> permittedKeysInvalid = new HashSet<>(Arrays.asList(invalidKey));
             return ApplicationContextHolder.getInheritableThreadLocalContext(contextName, permittedKeysInvalid).fetch(validKey);
-        };
-        FutureTask<String> ft = new FutureTask<>(childProcess);
-        new Thread(ft).start();
-        try
-        {
-            Thread.sleep(1000);
-            ft.get();
-        }
-        catch (InterruptedException | ExecutionException e)
-        {
-            throw e.getCause();
-        }
+        }, executorService);
+        
+        Thread.sleep(1000);
+        assertEquals(true, ft.isCompletedExceptionally());
+        assertThrows(InvalidContextException.class, ()->rethrowCause(ft));
     }
 
-    @Test(expected = InvalidKeyException.class)
+    @Test
     public void testGetInheritableThreadLocalContextWithPermittedKeysInvalidKey() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
         
         ApplicationContext localContext = ApplicationContextHolder.getInheritableThreadLocalContext(contextName, permittedKeys);
         localContext.add(validKey, valueSetInThread1);
-        Callable<String> childProcess = ()->{
+        
+        CompletableFuture<String> ft = CompletableFuture.supplyAsync(()->{
             return ApplicationContextHolder.getInheritableThreadLocalContext(contextName, permittedKeys).fetch(invalidKey);
-        };
-        FutureTask<String> ft = new FutureTask<>(childProcess);
-        new Thread(ft).start();
-        try
-        {
-            Thread.sleep(1000);
-            ft.get();
-        }
-        catch (InterruptedException | ExecutionException e)
-        {
-            throw e.getCause();
-        }
+        }, executorService);
+        
+        Thread.sleep(1000);
+        assertEquals(true, ft.isCompletedExceptionally());
+        assertThrows(InvalidKeyException.class, ()->rethrowCause(ft));
     }
 
     @Test
@@ -169,6 +160,18 @@ public class TestInheritableThreadLocalApplicationContext
         }, executorService);       
         
         assertNull(future1.get());
+    }
+    
+    private void rethrowCause(Future future) throws Throwable
+    {
+	try 
+	{
+	    future.get();
+	}
+	catch(ExecutionException | InterruptedException ee)
+	{
+	    throw ee.getCause();
+	}
     }
 
 }

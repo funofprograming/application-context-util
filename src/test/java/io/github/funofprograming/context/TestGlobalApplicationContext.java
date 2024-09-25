@@ -1,20 +1,22 @@
 package io.github.funofprograming.context;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.github.funofprograming.context.impl.ApplicationContextHolder;
 import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
@@ -29,7 +31,7 @@ public class TestGlobalApplicationContext
     private Set<Key<?>> permittedKeys;
     private ThreadPoolExecutor executorService;
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         contextName = "TestGlobalApplicationContext";
@@ -40,7 +42,7 @@ public class TestGlobalApplicationContext
         executorService.allowCoreThreadTimeOut(true);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         ApplicationContextHolder.clearGlobalContext(contextName);
@@ -70,7 +72,7 @@ public class TestGlobalApplicationContext
         assertEquals(valueSetInThread1, future2.get());
     }
 
-    @Test(expected = InvalidContextException.class)
+    @Test
     public void testGetGlobalContextWithPermittedKeys() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
@@ -90,18 +92,10 @@ public class TestGlobalApplicationContext
         Thread.sleep(1000);
         
         assertEquals(true, future2.isCompletedExceptionally());
-        
-        try 
-        {
-            future2.get();
-        }
-        catch(ExecutionException ee) 
-        {
-            throw ee.getCause();
-        }
+        assertThrows(InvalidContextException.class, ()->rethrowCause(future2));
     }
     
-    @Test(expected = InvalidKeyException.class)
+    @Test
     public void testGetGlobalContextWithPermittedKeysInvalidKey() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
@@ -121,15 +115,7 @@ public class TestGlobalApplicationContext
         Thread.sleep(1000);
         
         assertEquals(true, future2.isCompletedExceptionally());
-        
-        try 
-        {
-            future2.get();
-        }
-        catch(ExecutionException ee) 
-        {
-            throw ee.getCause();
-        }
+        assertThrows(InvalidKeyException.class, ()->rethrowCause(future2));
     }
 
     @Test
@@ -180,5 +166,17 @@ public class TestGlobalApplicationContext
         Thread.sleep(1000);
         
         assertNull(future3.get());
+    }
+    
+    private void rethrowCause(Future future) throws Throwable
+    {
+	try 
+	{
+	    future.get();
+	}
+	catch(ExecutionException | InterruptedException ee)
+	{
+	    throw ee.getCause();
+	}
     }
 }
