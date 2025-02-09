@@ -11,6 +11,7 @@ import io.github.funofprograming.context.impl.ContextConcurrencyManager.Acquired
 import io.github.funofprograming.context.impl.ContextConcurrencyManager.LockAutoCloseable;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Thread safe extension of {@linkplain ApplicationContextImpl} by implementing {@linkplain ConcurrentApplicationContextImpl}
@@ -18,6 +19,7 @@ import lombok.Getter;
  * @author Akshay Jain
  *
  */
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class ConcurrentApplicationContextImpl extends ApplicationContextImpl implements ConcurrentApplicationContext
 {
     @Getter(AccessLevel.PROTECTED)

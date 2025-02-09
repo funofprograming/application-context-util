@@ -23,7 +23,7 @@ import lombok.ToString;
  *
  */
 @EqualsAndHashCode
-@ToString
+@ToString(of = {"name"})
 public class ApplicationContextImpl implements ApplicationContext {
 
     @Getter

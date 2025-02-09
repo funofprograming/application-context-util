@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Application context key with type safety. 
@@ -13,6 +14,7 @@ import lombok.EqualsAndHashCode;
  * @param <T>
  */
 @Data
+@RequiredArgsConstructor
 @EqualsAndHashCode(of = {"keyName"})
 public class Key<T> implements Serializable
 {
@@ -35,7 +37,7 @@ public class Key<T> implements Serializable
     
     public static <T> Key<T> of(String keyName, KeyType<T> type)
     {
-        return Key.<T>of(keyName, type);
+        return new Key<T>(keyName, type);
     }
     
     /**
