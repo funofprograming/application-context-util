@@ -13,16 +13,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import io.github.funofprograming.context.impl.ApplicationContextHoldersKt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.funofprograming.context.impl.ApplicationContextHolder;
 import io.github.funofprograming.context.impl.ApplicationContextImpl;
 import io.github.funofprograming.context.impl.InvalidContextException;
 import io.github.funofprograming.context.impl.InvalidKeyException;
 
-public class TestThreadLocalApplicationContext
+public class TestJavaThreadLocalApplicationContext
 {
     private String contextName;
     private Key<String> validKey;
@@ -34,8 +34,8 @@ public class TestThreadLocalApplicationContext
     public void setUp() throws Exception
     {
         contextName = "TestThreadLocalApplicationContext";
-        validKey = Key.of("ValidKey", String.class);
-        invalidKey = Key.of("InvalidKey", String.class);
+        validKey = Key.Companion.of("ValidKey", String.class);
+        invalidKey = Key.Companion.of("InvalidKey", String.class);
         permittedKeys = new HashSet<>(Arrays.asList(validKey));
         executorService = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         executorService.allowCoreThreadTimeOut(true);
@@ -44,7 +44,7 @@ public class TestThreadLocalApplicationContext
     @AfterEach
     public void tearDown() throws Exception
     {
-        ApplicationContextHolder.clearThreadLocalContext(contextName);
+        ApplicationContextHoldersKt.clearThreadLocalContext(contextName);
         executorService.shutdown();
     }
 
@@ -54,15 +54,15 @@ public class TestThreadLocalApplicationContext
         String valueSetInThread1 = "Value T1";
         
         CompletableFuture<String> future1 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext localContext = ApplicationContextHolder.getThreadLocalContext(contextName);
+            ApplicationContext localContext = ApplicationContextHoldersKt.getThreadLocalContext(contextName);
             localContext.add(validKey, valueSetInThread1);
-            return ApplicationContextHolder.getThreadLocalContext(contextName).fetch(validKey);
+            return ApplicationContextHoldersKt.getThreadLocalContext(contextName).fetch(validKey);
         }, executorService);
         
         Thread.sleep(1000);
         
         CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext localContext = ApplicationContextHolder.getThreadLocalContext(contextName);
+            ApplicationContext localContext = ApplicationContextHoldersKt.getThreadLocalContext(contextName);
             return localContext.fetch(validKey);
         }, executorService);        
         
@@ -74,19 +74,19 @@ public class TestThreadLocalApplicationContext
     public void testGetThreadLocalContextWithPermittedKeys() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
-        ApplicationContext localContext = ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeys);
+        ApplicationContext localContext = ApplicationContextHoldersKt.getThreadLocalContext(contextName, permittedKeys);
         localContext.add(validKey, valueSetInThread1);
         Set<Key<?>> permittedKeysInvalid = new HashSet<>(Arrays.asList(invalidKey));
-        assertThrows(InvalidContextException.class, ()->ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeysInvalid));
+        assertThrows(InvalidContextException.class, ()->ApplicationContextHoldersKt.getThreadLocalContext(contextName, permittedKeysInvalid));
     }
     
     @Test
     public void testGetThreadLocalContextWithPermittedKeysInvalidKey() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
-        ApplicationContext localContext = ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeys);
+        ApplicationContext localContext = ApplicationContextHoldersKt.getThreadLocalContext(contextName, permittedKeys);
         localContext.add(validKey, valueSetInThread1);
-        assertThrows(InvalidKeyException.class, ()->ApplicationContextHolder.getThreadLocalContext(contextName, permittedKeys).fetch(invalidKey));
+        assertThrows(InvalidKeyException.class, ()->ApplicationContextHoldersKt.getThreadLocalContext(contextName, permittedKeys).fetch(invalidKey));
     }
 
     @Test
@@ -95,16 +95,16 @@ public class TestThreadLocalApplicationContext
         String valueSetInThread1 = "Value T1";
         
         CompletableFuture<String> future1 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext localContext = new ApplicationContextImpl(contextName);
-            ApplicationContextHolder.setThreadLocalContext(localContext);
+            ApplicationContext localContext = new ApplicationContextImpl(contextName, null);
+            ApplicationContextHoldersKt.setThreadLocalContext(localContext);
             localContext.add(validKey, valueSetInThread1);
-            return ApplicationContextHolder.getThreadLocalContext(contextName).fetch(validKey);
+            return ApplicationContextHoldersKt.getThreadLocalContext(contextName).fetch(validKey);
         }, executorService);
         
         Thread.sleep(1000);
         
         CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext localContext = ApplicationContextHolder.getThreadLocalContext(contextName);
+            ApplicationContext localContext = ApplicationContextHoldersKt.getThreadLocalContext(contextName);
             return localContext.fetch(validKey);
         }, executorService);        
         
@@ -117,11 +117,11 @@ public class TestThreadLocalApplicationContext
     {
         String valueSetInThread1 = "Value T1";
         
-        ApplicationContext localContext = new ApplicationContextImpl(contextName);
-        ApplicationContextHolder.setThreadLocalContext(localContext);
+        ApplicationContext localContext = new ApplicationContextImpl(contextName, null);
+        ApplicationContextHoldersKt.setThreadLocalContext(localContext);
         localContext.add(validKey, valueSetInThread1);
-        ApplicationContextHolder.clearThreadLocalContext(contextName);
-        String val = ApplicationContextHolder.getThreadLocalContext(contextName).fetch(validKey);
+        ApplicationContextHoldersKt.clearThreadLocalContext(contextName);
+        String val = ApplicationContextHoldersKt.getThreadLocalContext(contextName).fetch(validKey);
         
         assertNull(val);
     }
