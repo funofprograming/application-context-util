@@ -11,35 +11,75 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<kotlin.version>2.1.10</kotlin.version>
+		<kotlin.coroutines.version>1.10.1</kotlin.coroutines.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
+		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
 		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
 		<versions-maven-plugin.version>2.16.1</versions-maven-plugin.version>
 		<build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+		<kotlin-maven-plugin.version>2.1.10</kotlin-maven-plugin.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-bom</artifactId>
+				<version>${kotlin.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlinx</groupId>
+				<artifactId>kotlinx-coroutines-bom</artifactId>
+				<version>${kotlin.coroutines.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	
 	<dependencies>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.30</version>
-			<scope>provided</scope>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.10.1</version>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-reflect</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlinx</groupId>
+			<artifactId>kotlinx-coroutines-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-test-junit5</artifactId>
 			<scope>test</scope>
-			<type>jar</type>
-			<optional>true</optional>
 		</dependency>
 	</dependencies>
 
 	<build>
+		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+		<testSourceDirectory>${project.basedir}/src/test</testSourceDirectory>
 		<plugins>
+			<plugin>
+				<artifactId>kotlin-maven-plugin</artifactId>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<version>${kotlin-maven-plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<args>
+						<arg>-Xdebug</arg>
+					</args>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -47,6 +87,25 @@
 				<configuration>
 					<release>${java.version}</release>
 				</configuration>
+				<executions>
+					<!-- Replacing default-compile as it is treated specially by Maven -->
+					<execution>
+						<id>default-compile</id>
+						<phase>none</phase>
+					</execution>
+					<!-- Replacing default-testCompile as it is treated specially by Maven -->
+					<execution>
+						<id>default-testCompile</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>java-test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -88,8 +147,7 @@
 						</goals>
 						<configuration>
 							<generateBackupPoms>false</generateBackupPoms>
-							<newVersion>
-								${parsedVersion.nextMajorVersion}.0.0</newVersion>
+							<newVersion>${parsedVersion.nextMajorVersion}.0.0-SNAPSHOT</newVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -99,8 +157,7 @@
 						</goals>
 						<configuration>
 							<generateBackupPoms>false</generateBackupPoms>
-							<newVersion>
-								${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0</newVersion>
+							<newVersion>${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT</newVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -110,8 +167,17 @@
 						</goals>
 						<configuration>
 							<generateBackupPoms>false</generateBackupPoms>
-							<newVersion>
-								${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}</newVersion>
+							<newVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT</newVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>release</id>
+						<goals>
+							<goal>set</goal>
+						</goals>
+						<configuration>
+							<generateBackupPoms>false</generateBackupPoms>
+							<newVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</newVersion>
 						</configuration>
 					</execution>
 				</executions>
@@ -129,6 +195,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -144,6 +215,7 @@
 			<name>Akshay Jain</name>
 			<organization>Fun of Programing</organization>
 			<organizationUrl>https://funofprograming.github.io</organizationUrl>
+			<email>akshay.jain.7983@hotmail.com</email>
 		</developer>
 	</developers>
 

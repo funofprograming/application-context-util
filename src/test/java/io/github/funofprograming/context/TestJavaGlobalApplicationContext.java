@@ -14,29 +14,31 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import io.github.funofprograming.context.impl.ApplicationContextHoldersKt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.funofprograming.context.impl.ApplicationContextHolder;
 import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
 import io.github.funofprograming.context.impl.InvalidContextException;
 import io.github.funofprograming.context.impl.InvalidKeyException;
 
-public class TestGlobalApplicationContext
+public class TestJavaGlobalApplicationContext
 {
     private String contextName;
+    private String cloneContextName;
     private Key<String> validKey;
     private Key<String> invalidKey;
     private Set<Key<?>> permittedKeys;
     private ThreadPoolExecutor executorService;
-    
+
     @BeforeEach
     public void setUp() throws Exception
     {
         contextName = "TestGlobalApplicationContext";
-        validKey = Key.of("ValidKey", String.class);
-        invalidKey = Key.of("InvalidKey", String.class);
+        cloneContextName = "TestCloneGlobalApplicationContext";
+        validKey = Key.Companion.of("ValidKey", String.class);
+        invalidKey = Key.Companion.of("InvalidKey", String.class);
         permittedKeys = new HashSet<>(Arrays.asList(validKey));
         executorService = new ThreadPoolExecutor(1, 1, 1L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         executorService.allowCoreThreadTimeOut(true);
@@ -45,7 +47,7 @@ public class TestGlobalApplicationContext
     @AfterEach
     public void tearDown() throws Exception
     {
-        ApplicationContextHolder.clearGlobalContext(contextName);
+        ApplicationContextHoldersKt.clearGlobalContext(contextName);
         executorService.shutdown();
     }
 
@@ -53,22 +55,22 @@ public class TestGlobalApplicationContext
     public void testGetGlobalContext() throws InterruptedException, ExecutionException
     {
         String valueSetInThread1 = "Value T1";
-        
+
         CompletableFuture.runAsync(()->{
-            ApplicationContext globalContext = ApplicationContextHolder.getGlobalContext(contextName);
+            ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName);
             globalContext.add(validKey, valueSetInThread1);
         });
-        
+
         Thread.sleep(1000);
-        
+
         CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext globalContext = ApplicationContextHolder.getGlobalContext(contextName);
+            ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName);
             return globalContext.fetch(validKey);
-        });        
-        
-        
+        });
+
+
         Thread.sleep(1000);
-        
+
         assertEquals(valueSetInThread1, future2.get());
     }
 
@@ -76,44 +78,44 @@ public class TestGlobalApplicationContext
     public void testGetGlobalContextWithPermittedKeys() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
-        
+
         CompletableFuture.runAsync(()->{
-            ApplicationContext globalContext = ApplicationContextHolder.getGlobalContext(contextName, permittedKeys);
+            ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName, permittedKeys);
             globalContext.add(validKey, valueSetInThread1);
         });
-        
+
         Thread.sleep(1000);
-        
+
         CompletableFuture<Void> future2 = CompletableFuture.runAsync(()->{
             Set<Key<?>> permittedKeysInvalid = new HashSet<>(Arrays.asList(invalidKey));
-            ApplicationContextHolder.getGlobalContext(contextName, permittedKeysInvalid);
-        });        
-        
+            ApplicationContextHoldersKt.getGlobalContext(contextName, permittedKeysInvalid);
+        });
+
         Thread.sleep(1000);
-        
+
         assertEquals(true, future2.isCompletedExceptionally());
         assertThrows(InvalidContextException.class, ()->rethrowCause(future2));
     }
-    
+
     @Test
     public void testGetGlobalContextWithPermittedKeysInvalidKey() throws Throwable
     {
         String valueSetInThread1 = "Value T1";
-        
+
         CompletableFuture.runAsync(()->{
-            ApplicationContext globalContext = ApplicationContextHolder.getGlobalContext(contextName, permittedKeys);
+            ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName, permittedKeys);
             globalContext.add(validKey, valueSetInThread1);
         });
-        
+
         Thread.sleep(1000);
-        
+
         CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext globalContext = ApplicationContextHolder.getGlobalContext(contextName, permittedKeys);
+            ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName, permittedKeys);
             return globalContext.fetch(invalidKey);
-        });        
-        
+        });
+
         Thread.sleep(1000);
-        
+
         assertEquals(true, future2.isCompletedExceptionally());
         assertThrows(InvalidKeyException.class, ()->rethrowCause(future2));
     }
@@ -122,22 +124,22 @@ public class TestGlobalApplicationContext
     public void testSetGlobalContext() throws InterruptedException, ExecutionException
     {
         String valueSetInThread1 = "Value T1";
-        
+
         CompletableFuture.runAsync(()->{
-            ApplicationContext globalContext = new ConcurrentApplicationContextImpl(contextName);
-            ApplicationContextHolder.setGlobalContext(globalContext);
+            ApplicationContext globalContext = new ConcurrentApplicationContextImpl(contextName, null);
+            ApplicationContextHoldersKt.setGlobalContext(globalContext);
             globalContext.add(validKey, valueSetInThread1);
         });
-        
+
         Thread.sleep(1000);
-        
+
         CompletableFuture<String> future2 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext globalContext = ApplicationContextHolder.getGlobalContext(contextName);
+            ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName);
             return globalContext.fetch(validKey);
-        });        
-        
+        });
+
         Thread.sleep(1000);
-        
+
         assertEquals(valueSetInThread1, future2.get());
     }
 
@@ -145,38 +147,54 @@ public class TestGlobalApplicationContext
     public void testClearGlobalContext() throws InterruptedException, ExecutionException
     {
         String valueSetInThread1 = "Value T1";
-        
+
         CompletableFuture.runAsync(()->{
-            ApplicationContext globalContext = new ConcurrentApplicationContextImpl(contextName);
-            ApplicationContextHolder.setGlobalContext(globalContext);
+            ApplicationContext globalContext = new ConcurrentApplicationContextImpl(contextName, null);
+            ApplicationContextHoldersKt.setGlobalContext(globalContext);
             globalContext.add(validKey, valueSetInThread1);
         });
-        
+
         Thread.sleep(1000);
-        
+
         CompletableFuture.runAsync(()->{
-            ApplicationContextHolder.clearGlobalContext(contextName);
+            ApplicationContextHoldersKt.clearGlobalContext(contextName);
         });
-        
+
         CompletableFuture<String> future3 = CompletableFuture.supplyAsync(()->{
-            ApplicationContext globalContext = ApplicationContextHolder.getGlobalContext(contextName);
+            ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName);
             return globalContext.fetch(validKey);
-        });        
-        
+        });
+
         Thread.sleep(1000);
-        
+
         assertNull(future3.get());
     }
-    
+
+    @Test
+    public void testCloneGlobalContext() throws InterruptedException, ExecutionException
+    {
+        String valueSetInThread1 = "Value T1";
+        ApplicationContext globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName);
+        globalContext.add(validKey, valueSetInThread1);
+        ApplicationContext globalContextClone = globalContext.clone(cloneContextName, null);
+        assertEquals(valueSetInThread1, globalContextClone.fetch(validKey));
+        ApplicationContextHoldersKt.clearGlobalContext(contextName);
+
+        globalContext = ApplicationContextHoldersKt.getGlobalContext(contextName, permittedKeys);
+        globalContext.add(validKey, valueSetInThread1);
+        globalContextClone = globalContext.clone(cloneContextName, permittedKeys);
+        assertEquals(valueSetInThread1, globalContextClone.fetch(validKey));
+    }
+
     private void rethrowCause(Future future) throws Throwable
     {
-	try 
-	{
-	    future.get();
-	}
-	catch(ExecutionException | InterruptedException ee)
-	{
-	    throw ee.getCause();
-	}
+        try
+        {
+            future.get();
+        }
+        catch(ExecutionException | InterruptedException ee)
+        {
+            throw ee.getCause();
+        }
     }
 }
