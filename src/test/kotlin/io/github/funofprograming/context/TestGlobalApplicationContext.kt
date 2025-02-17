@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException
 
 class TestGlobalApplicationContext {
 
-    private var contextName: String = "TestThreadLocalApplicationContext"
+    private var contextName: String = "TestGlobalApplicationContext"
     private var cloneContextName: String = "TestCloneGlobalApplicationContext"
     private var validKey: Key<String> = Key.of("ValidKey", String::class.java)
     private var invalidKey: Key<String> = Key.of("InvalidKey", String::class.java)
