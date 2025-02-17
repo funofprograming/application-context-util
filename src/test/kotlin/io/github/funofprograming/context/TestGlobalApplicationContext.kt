@@ -9,10 +9,12 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
+import java.util.concurrent.ExecutionException
 
 class TestGlobalApplicationContext {
 
     private var contextName: String = "TestThreadLocalApplicationContext"
+    private var cloneContextName: String = "TestCloneGlobalApplicationContext"
     private var validKey: Key<String> = Key.of("ValidKey", String::class.java)
     private var invalidKey: Key<String> = Key.of("InvalidKey", String::class.java)
     private var permittedKeys: Set<Key<*>> = setOf(validKey)
@@ -94,7 +96,7 @@ class TestGlobalApplicationContext {
         val valueSetInThread1 = "Value T1"
 
         launch {
-            val globalContext: ApplicationContext = ConcurrentApplicationContextImpl(contextName, null)
+            val globalContext: ApplicationContext = ConcurrentApplicationContextImpl(contextName)
             setGlobalContext(globalContext)
             globalContext.add(validKey, valueSetInThread1)
         }
@@ -118,7 +120,7 @@ class TestGlobalApplicationContext {
         val valueSetInThread1 = "Value T1"
 
         launch {
-            val globalContext: ApplicationContext = ConcurrentApplicationContextImpl(contextName, null)
+            val globalContext: ApplicationContext = ConcurrentApplicationContextImpl(contextName)
             setGlobalContext(globalContext)
             globalContext.add(validKey, valueSetInThread1)
         }
@@ -139,6 +141,22 @@ class TestGlobalApplicationContext {
 
         delay(1000)
         assertNull(def2.await())
+    }
+
+    @Test
+    @Throws(InterruptedException::class, ExecutionException::class)
+    fun testCloneGlobalContext() {
+        val valueSetInThread1 = "Value T1"
+        var globalContext = getGlobalContext(contextName)
+        globalContext?.add(validKey, valueSetInThread1)
+        var globalContextClone = globalContext?.clone(cloneContextName)
+        assertEquals(valueSetInThread1, globalContextClone?.fetch(validKey))
+        clearGlobalContext(contextName)
+
+        globalContext = getGlobalContext(contextName, permittedKeys)
+        globalContext?.add(validKey, valueSetInThread1)
+        globalContextClone = globalContext?.clone(cloneContextName, permittedKeys)
+        assertEquals(valueSetInThread1, globalContextClone?.fetch(validKey))
     }
 
 }

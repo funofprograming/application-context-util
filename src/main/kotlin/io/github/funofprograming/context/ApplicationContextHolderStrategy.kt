@@ -46,14 +46,6 @@ interface ApplicationContextHolderStrategy {
     fun clearContext(name: String): ApplicationContext?
 
     /**
-     * Check if context with given name exists in this context holder strategy
-     *
-     * @param name
-     * @return
-     */
-    fun existsContext(name: String): Boolean
-
-    /**
      * Check if context with given name and permittedKeys exists in this context holder strategy
      *
      * @param name

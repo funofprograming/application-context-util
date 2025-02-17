@@ -65,11 +65,6 @@ abstract class AbstractApplicationContextHolderStrategy : ApplicationContextHold
     }
 
     /**
-     * {@inheritDoc}
-     */
-    override fun existsContext(name: String): Boolean = contextContainedInStore(name)
-
-    /**
      * Check if context with given name and permittedKeys exists in this context holder strategy
      *
      * @param name

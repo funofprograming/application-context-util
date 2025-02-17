@@ -39,14 +39,6 @@ fun setThreadLocalContext(applicationContext: ApplicationContext) {setContext(ap
 fun clearThreadLocalContext(name: String): ApplicationContext? = clearContext(name, threadLocalContextHolderStrategy)
 
 /**
- * Check if ThreadLocal context with given name exists
- *
- * @param name
- * @return
- */
-fun existsThreadLocalContext(name: String): Boolean = existsContext(name, threadLocalContextHolderStrategy)
-
-/**
  * Check if ThreadLocal context with given name and permittedKeys exists
  *
  * @param name
@@ -92,14 +84,6 @@ fun setGlobalContext(applicationContext: ApplicationContext) {setContext(applica
  * @param name
  */
 fun clearGlobalContext(name: String): ApplicationContext? = clearContext(name, globalContextHolderStrategy)
-
-/**
- * Check if Global context with given name exists
- *
- * @param name
- * @return
- */
-fun existsGlobalContext(name: String): Boolean = existsContext(name, globalContextHolderStrategy)
 
 /**
  * Check if Global context with given name and permittedKeys exists
@@ -157,17 +141,6 @@ private fun setContext(
 private fun clearContext(
     name: String,
     applicationContextHolderStrategy: ApplicationContextHolderStrategy): ApplicationContext? = applicationContextHolderStrategy.clearContext(name)
-
-/**
- * Check if context with given name exists
- *
- * @param name
- * @return
- */
-private fun existsContext(
-    name: String, applicationContextHolderStrategy:
-    ApplicationContextHolderStrategy): Boolean = applicationContextHolderStrategy.existsContext(name)
-
 /**
  * Check if context with given name and permittedKeys exists
  *
@@ -176,7 +149,7 @@ private fun existsContext(
  */
 private fun existsContext(
     name: String,
-    permittedKeys: Set<Key<*>>?,
+    permittedKeys: Set<Key<*>>? = null,
     applicationContextHolderStrategy: ApplicationContextHolderStrategy
 ): Boolean = applicationContextHolderStrategy.existsContext(name, permittedKeys)
 

@@ -1,6 +1,6 @@
 package io.github.funofprograming.context
 
-interface ApplicationContext : Cloneable {
+interface ApplicationContext {
 
     /**
      * Application context name
@@ -105,8 +105,16 @@ interface ApplicationContext : Cloneable {
     /**
      * Merge other context with this using the given merge strategy
      *
-     * @param other
+     * @param other other context. If null then no effect on this context
      * @param mergeStrategy
      */
-    fun merge(other: ApplicationContext, mergeStrategy: ApplicationContextMergeStrategy)
+    fun merge(other: ApplicationContext?, mergeStrategy: ApplicationContextMergeStrategy)
+
+    /**
+     * Creates a clone of this context with passed cloneName and clonePermittedKeys. While cloning only the permittedKeys will be added
+     *
+     * @param cloneName name of the cloned ApplicationContext
+     * @param clonePermittedKeys permittedKeys of the cloned ApplicationContext
+     */
+    fun clone(cloneName: String, clonePermittedKeys: Set<Key<*>>? = null): ApplicationContext
 }

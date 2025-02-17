@@ -85,5 +85,5 @@ interface ConcurrentApplicationContext : ApplicationContext {
      * @param mergeStrategy
      * @param timeout in millis
      */
-    suspend fun merge(other: ApplicationContext, mergeStrategy: ApplicationContextMergeStrategy, timeout: Long?)
+    suspend fun merge(other: ApplicationContext?, mergeStrategy: ApplicationContextMergeStrategy, timeout: Long?)
 }

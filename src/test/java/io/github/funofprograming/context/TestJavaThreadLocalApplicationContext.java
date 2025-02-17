@@ -25,6 +25,7 @@ import io.github.funofprograming.context.impl.InvalidKeyException;
 public class TestJavaThreadLocalApplicationContext
 {
     private String contextName;
+    private String cloneContextName;
     private Key<String> validKey;
     private Key<String> invalidKey;
     private Set<Key<?>> permittedKeys;
@@ -34,6 +35,7 @@ public class TestJavaThreadLocalApplicationContext
     public void setUp() throws Exception
     {
         contextName = "TestThreadLocalApplicationContext";
+        cloneContextName = "TestCloneGlobalApplicationContext";
         validKey = Key.Companion.of("ValidKey", String.class);
         invalidKey = Key.Companion.of("InvalidKey", String.class);
         permittedKeys = new HashSet<>(Arrays.asList(validKey));
@@ -124,5 +126,21 @@ public class TestJavaThreadLocalApplicationContext
         String val = ApplicationContextHoldersKt.getThreadLocalContext(contextName).fetch(validKey);
         
         assertNull(val);
+    }
+
+    @Test
+    public void testCloneThreadLocalContext() throws InterruptedException, ExecutionException
+    {
+        String valueSetInThread1 = "Value T1";
+        ApplicationContext threadLocalContext = ApplicationContextHoldersKt.getThreadLocalContext(contextName);
+        threadLocalContext.add(validKey, valueSetInThread1);
+        ApplicationContext threadLocalContextClone = threadLocalContext.clone(cloneContextName, null);
+        assertEquals(valueSetInThread1, threadLocalContextClone.fetch(validKey));
+        ApplicationContextHoldersKt.clearThreadLocalContext(contextName);
+
+        threadLocalContext = ApplicationContextHoldersKt.getThreadLocalContext(contextName, permittedKeys);
+        threadLocalContext.add(validKey, valueSetInThread1);
+        threadLocalContextClone = threadLocalContext.clone(cloneContextName, permittedKeys);
+        assertEquals(valueSetInThread1, threadLocalContextClone.fetch(validKey));
     }
 }

@@ -10,14 +10,18 @@ import io.github.funofprograming.context.Key
  *
  * @author Akshay Jain
  * @property name name of the context
- * @property permittedKeys optional set of permitted keys for this context useful when restricted key set to be allowed
+ * @property permittedKeys optional set of permitted keys for this context useful when restricted key set to be allowed. null or empty means any key allowed
  */
 open class ApplicationContextImpl(private val name: String, private val permittedKeys: Set<Key<*>>? = null) : ApplicationContext {
 
     private val store: MutableMap<Key<*>, Any?> = mutableMapOf()
 
+    public constructor(name: String, permittedKeys: Set<Key<*>>? = null, initialCopy: ApplicationContext) : this(name, permittedKeys) {
+        merge(initialCopy, ApplicationContextMergeOverwriteStrategy(permittedKeys))
+    }
+
     private fun validateKey(key: Key<*>) {
-        if(permittedKeys?. contains(key) == false)
+        if(!permittedKeys.isNullOrEmpty() && !permittedKeys.contains(key))
             throw InvalidKeyException("Invalid key: $key. Valid keys for this context are: $permittedKeys")
     }
 
@@ -71,11 +75,11 @@ open class ApplicationContextImpl(private val name: String, private val permitte
 
     override fun keySet(): Set<Key<*>>? = store.keys.toSet()
 
-    override fun merge(other: ApplicationContext, mergeStrategy: ApplicationContextMergeStrategy) {
+    override fun merge(other: ApplicationContext?, mergeStrategy: ApplicationContextMergeStrategy) {
 
-        val keysOther:Set<Key<Any>>? = other.keySet() as Set<Key<Any>>
+        val keysOther:Set<Key<Any>>? = other?.keySet() as Set<Key<Any>>
 
-        for (keyOther in keysOther!!) {
+        for (keyOther in keysOther?.toSet()?:emptySet()) {
             if (!isKeyValid(keyOther)) {
                 continue
             }
@@ -90,6 +94,8 @@ open class ApplicationContextImpl(private val name: String, private val permitte
             }
         }
     }
+
+    override fun clone(cloneName: String, clonePermittedKeys: Set<Key<*>>?): ApplicationContext = ApplicationContextImpl(cloneName, clonePermittedKeys, this)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

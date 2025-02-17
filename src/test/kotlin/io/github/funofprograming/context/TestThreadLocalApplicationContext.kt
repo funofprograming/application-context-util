@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException
 class TestThreadLocalApplicationContext {
 
     private var contextName: String = "TestThreadLocalApplicationContext"
+    private var cloneContextName: String = "TestCloneGlobalApplicationContext"
     private var validKey: Key<String> = Key.of("ValidKey", String::class.java)
     private var invalidKey: Key<String> = Key.of("InvalidKey", String::class.java)
     private var permittedKeys: Set<Key<*>> = setOf(validKey)
@@ -68,7 +69,7 @@ class TestThreadLocalApplicationContext {
         val valueSetInThread1 = "Value T1"
         val cs1 = initCoroutineScopeForApplicationContext()
         val def1 = cs1.async {
-            val localContext: ApplicationContext = ApplicationContextImpl(contextName, null)
+            val localContext: ApplicationContext = ApplicationContextImpl(contextName)
             setThreadLocalContext(localContext)
             localContext.add(validKey, valueSetInThread1)
             return@async getThreadLocalContext(contextName)?.fetch(validKey)
@@ -95,11 +96,28 @@ class TestThreadLocalApplicationContext {
     @Throws(Throwable::class)
     fun testClearThreadLocalContext() {
         val valueSetInThread1 = "Value T1"
-        val localContext: ApplicationContext = ApplicationContextImpl(contextName, null)
+        val localContext: ApplicationContext = ApplicationContextImpl(contextName)
         setThreadLocalContext(localContext)
         localContext.add(validKey, valueSetInThread1)
         assertNotNull(getThreadLocalContext(contextName)?.fetch(validKey))
         clearThreadLocalContext(contextName)
         assertNull(getThreadLocalContext(contextName)?.fetch(validKey))
+    }
+
+
+    @Test
+    @Throws(InterruptedException::class, ExecutionException::class)
+    fun testCloneThreadLocalContext() {
+        val valueSetInThread1 = "Value T1"
+        var threadLocalContext = getThreadLocalContext(contextName)
+        threadLocalContext?.add(validKey, valueSetInThread1)
+        var threadLocalContextClone = threadLocalContext?.clone(cloneContextName)
+        assertEquals(valueSetInThread1, threadLocalContextClone?.fetch(validKey))
+        clearThreadLocalContext(contextName)
+
+        threadLocalContext = getThreadLocalContext(contextName, permittedKeys)
+        threadLocalContext?.add(validKey, valueSetInThread1)
+        threadLocalContextClone = threadLocalContext?.clone(cloneContextName, permittedKeys)
+        assertEquals(valueSetInThread1, threadLocalContextClone?.fetch(validKey))
     }
 }

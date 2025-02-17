@@ -6,9 +6,13 @@ import io.github.funofprograming.context.ConcurrentApplicationContext
 import io.github.funofprograming.context.Key
 import kotlinx.coroutines.runBlocking
 
-open class ConcurrentApplicationContextImpl(private val name: String, private val permittedKeys: Set<Key<*>>? = null) : ApplicationContextImpl(name, permittedKeys), ConcurrentApplicationContext {
+open class ConcurrentApplicationContextImpl(name: String, permittedKeys: Set<Key<*>>? = null) : ApplicationContextImpl(name, permittedKeys), ConcurrentApplicationContext {
 
     private val concurrencyManager = ContextConcurrencyManager.getInstance()
+
+    constructor(name: String, permittedKeys: Set<Key<*>>? = null, initialCopy: ApplicationContext) : this(name, permittedKeys) {
+        merge(initialCopy, ApplicationContextMergeOverwriteStrategy(permittedKeys))
+    }
 
     override fun <T> addIfNotPresent(key: Key<T>, value: T?) = runBlocking { addIfNotPresent(key, value, null) }
 
@@ -38,7 +42,9 @@ open class ConcurrentApplicationContextImpl(private val name: String, private va
 
     override suspend fun clear(timeout: Long?) = concurrencyManager.executeWriteWithLock(timeout) { super.clear() }
 
-    override fun merge(other: ApplicationContext, mergeStrategy: ApplicationContextMergeStrategy) = runBlocking { merge(other, mergeStrategy, null) }
+    override fun merge(other: ApplicationContext?, mergeStrategy: ApplicationContextMergeStrategy) = runBlocking { merge(other, mergeStrategy, null) }
 
-    override suspend fun merge(other: ApplicationContext, mergeStrategy: ApplicationContextMergeStrategy, timeout: Long?) = concurrencyManager.executeWriteWithLock(timeout) { super.merge(other, mergeStrategy) }
+    override suspend fun merge(other: ApplicationContext?, mergeStrategy: ApplicationContextMergeStrategy, timeout: Long?) = concurrencyManager.executeWriteWithLock(timeout) { super.merge(other, mergeStrategy) }
+
+    override fun clone(cloneName: String, clonePermittedKeys: Set<Key<*>>?): ApplicationContext = ConcurrentApplicationContextImpl(cloneName, clonePermittedKeys, this)
 }
