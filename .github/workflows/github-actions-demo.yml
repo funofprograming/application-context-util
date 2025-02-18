@@ -1,6 +1,9 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: push
+on:
+  push:
+    branches:
+      - github-actions
 
 jobs:
   Explore-GitHub-Actions:
@@ -14,6 +17,19 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           architecture: x64
-      - name: Run the Maven build
-        run: mvn clean install
+#      - name: Run the Maven build
+#        run: mvn clean install
+
+      - name: Testing commit
+        uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: update build version
+        run: mvn build-helper:parse-version versions:set@patch
+
+      - name: Commit back to branch
+        run: |
+          git add -A
+          git commit -m "Testing version upgrade"
+          git push
       - run: echo "🍏 This job's status is ${{ job.status }}."
