@@ -1,6 +1,9 @@
 name: Version increment
 run-name: Versioning
 on:
+  push:
+    branches:
+      - 'github-actions'
   workflow_dispatch:
     inputs:
       versionIncrementType:
