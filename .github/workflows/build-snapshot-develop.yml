@@ -1,0 +1,29 @@
+name: Build snapshot on develop
+run-name: Build snapshot on develop
+on:
+  push:
+    branches:
+      - develop
+      - github-actions
+
+
+jobs:
+  Build-snapshot--develop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+      - name: Set up JDK 21 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: x64
+      - uses: actions/checkout@v4
+        with:
+          ref: 'develop'
+      - run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
+      - name: Run the Maven build
+        run: |
+          echo "Run the Maven build for version $version"
+          mvn clean install --file pom.xml --batch-mode
+
