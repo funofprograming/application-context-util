@@ -33,11 +33,11 @@ jobs:
           git config user.name "GitHub Action"
           git config user.password "${{ secrets.GITHUB_TOKEN }}"
           echo "GIT_USER=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
-          echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}"
+          echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
       - run: |
           git checkout -b version/$version
           git add -A
           git commit -m "increment version"
-          git push origin version/$version
+          git push --force origin version/$version
           gh pr create --base develop --title "version increment by Github action" --body "version increment" --reviewer funofprograming
 
