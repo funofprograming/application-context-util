@@ -26,6 +26,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           architecture: x64
+      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
         with:
           ref: 'develop'
