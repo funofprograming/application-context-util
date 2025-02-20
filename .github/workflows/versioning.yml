@@ -26,14 +26,14 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           architecture: x64
-      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
         with:
           ref: 'develop'
       - run: mvn build-helper:parse-version versions:set@${{ github.event.inputs.versionIncrementType }}
       - run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
+      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           git checkout -b version/$version
           git add -A
