@@ -8,7 +8,7 @@ on:
 
 
 jobs:
-  Build-snapshot--develop:
+  Build-snapshot-develop:
     runs-on: ubuntu-latest
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
@@ -19,8 +19,6 @@ jobs:
           distribution: 'temurin'
           architecture: x64
       - uses: actions/checkout@v4
-        with:
-          ref: 'develop'
       - run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
       - name: Run the Maven build
         run: |
