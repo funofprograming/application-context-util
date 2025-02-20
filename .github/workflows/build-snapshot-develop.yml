@@ -1,5 +1,5 @@
-name: Build snapshot on develop
-run-name: Build snapshot on develop
+name: Build and publish snapshot on develop
+run-name: Build and publish snapshot on develop
 on:
   push:
     branches:
@@ -24,6 +24,5 @@ jobs:
       - run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
       - name: Run the Maven build
         run: |
-          echo "Run the Maven build for version $version"
-          mvn clean install --file pom.xml --batch-mode
-
+          echo "Run the Maven build and deploy for version $version"
+          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml
