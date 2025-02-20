@@ -10,7 +10,6 @@ on:
           - minor
           - major
         required: true
-        default: patch
 
 jobs:
   Versioning:
