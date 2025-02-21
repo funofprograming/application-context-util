@@ -21,6 +21,9 @@ jobs:
       - uses: actions/checkout@v4
       - run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
       - name: Run the Maven build
+        env:
+          FOP_SIGN_GPG_KEY: ${{ secrets.FOP_SIGN_GPG_KEY }}
+          FOP_SIGN_GPG_PASS: ${{ secrets.FOP_SIGN_GPG_PASS }}
         run: |
           echo "Run the Maven build and deploy for version $version"
           mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
