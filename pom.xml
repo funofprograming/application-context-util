@@ -26,6 +26,8 @@
 		<build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
 		<kotlin-maven-plugin.version>2.1.10</kotlin-maven-plugin.version>
 		<central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
+		<maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
+		<kotlin.dokka-maven-plugin.version>2.0.0</kotlin.dokka-maven-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -170,15 +172,22 @@
 						</executions>
 					</plugin>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>${maven-javadoc-plugin.version}</version>
+						<groupId>org.jetbrains.dokka</groupId>
+						<artifactId>dokka-maven-plugin</artifactId>
+						<version>${kotlin.dokka-maven-plugin.version}</version>
 						<executions>
 							<execution>
-								<id>attach-javadocs</id>
-								<phase>verify</phase>
+								<id>dokka</id>
+								<phase>prepare-package</phase>
 								<goals>
-									<goal>jar</goal>
+									<goal>dokka</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>javadocJar</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>javadoc</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -247,6 +256,32 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jar-plugin</artifactId>
 						<version>${maven-jar-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>dokka-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<classifier>dokka</classifier>
+									<classesDirectory>${project.build.directory}/dokka</classesDirectory>
+									<skipIfEmpty>true</skipIfEmpty>
+								</configuration>
+							</execution>
+							<execution>
+								<id>javadoc-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<classifier>javadoc</classifier>
+									<classesDirectory>${project.build.directory}/dokkaJavadoc</classesDirectory>
+									<skipIfEmpty>true</skipIfEmpty>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.sonatype.central</groupId>
@@ -259,6 +294,28 @@
 							<waitUntil>published</waitUntil>
 							<checksums>all</checksums>
 						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven-gpg-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<signer>bc</signer>
+									<bestPractices>true</bestPractices>
+									<defaultKeyring>false</defaultKeyring>
+									<useAgent>false</useAgent>
+									<keyEnvName>FOP_SIGN_GPG_KEY</keyEnvName>
+									<passphraseEnvName>FOP_SIGN_GPG_PASS</passphraseEnvName>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
