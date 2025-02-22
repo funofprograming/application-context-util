@@ -1,14 +1,13 @@
 package io.github.funofprograming.context
 
 import io.github.funofprograming.context.impl.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
 import java.util.concurrent.ExecutionException
+import kotlin.coroutines.EmptyCoroutineContext
 
 class TestThreadLocalApplicationContext {
 
@@ -24,8 +23,11 @@ class TestThreadLocalApplicationContext {
     }
 
     @Test
-    fun testGetThreadLocalContext() = runBlocking {
+    @Throws(Throwable::class)
+    fun testGetThreadLocalContext():Unit = runBlocking {
         val valueSetInThread1 = "Value T1"
+
+        // testing separate coroutine scopes
         val cs1 = initCoroutineScopeForApplicationContext()
         val def1 = cs1.async {
             val localContext = getThreadLocalContext(contextName)
@@ -42,6 +44,22 @@ class TestThreadLocalApplicationContext {
 
         assertNull(def2.await())
         assertEquals(valueSetInThread1, def1.await())
+
+        // testing inheritable coroutine scopes
+        val cs3 = initCoroutineScopeForApplicationContext()
+        val def3 = cs3.async {
+            val localContext = getThreadLocalContext(contextName)
+            localContext?.add(validKey, valueSetInThread1)
+            val cs4 = initCoroutineScopeForApplicationContext(this)
+            val def4 = cs4.async {
+                val localContext = getThreadLocalContext(contextName)
+                return@async localContext?.fetch(validKey)
+            }
+
+            return@async def4.await()
+        }
+
+        assertEquals(valueSetInThread1, def3.await())
     }
 
     @Test
