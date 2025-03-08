@@ -61,5 +61,3 @@ jobs:
       - name: Create a Github release from tag
       - run: |
           gh release create v$version --verify-tag --notes "Release version $version" --draft
-          
-          
