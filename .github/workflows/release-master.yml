@@ -41,12 +41,8 @@ jobs:
           git commit -m "release version $version"
           git push --force origin release/$version
 
-      - name: Build and publish to maven central
-      - run: |
-          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
-
       - name: Merge back to master from release branch
-      - run: |
+        run: |
           git checkout master
           git merge release/$version --commit
           git push --force origin master
@@ -58,5 +54,5 @@ jobs:
           git push --force origin v$version
 
       - name: Create a Github release from tag
-      - run: |
+        run: |
           gh release create v$version --verify-tag --notes "Release version $version" --draft
