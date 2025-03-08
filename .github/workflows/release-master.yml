@@ -8,8 +8,9 @@ on:
 jobs:
   Release:
     runs-on: ubuntu-latest
+    if: ${{ github.event.head_commit.message != 'post-release-update' }}
     steps:
-      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event with commit message ${{ github.event.head_commit.message }}."
       - name: Set up JDK 21 for x64
         uses: actions/setup-java@v4
         with:
@@ -26,9 +27,9 @@ jobs:
         run: |
           git config user.email "github-action@users.noreply.github.com"
           git config user.name "GitHub Action"
-          git config user.password "${{ secrets.FOP_RELEASE }}"
-          echo "GIT_USER=${{ github.actor }}:${{ secrets.FOP_RELEASE }}" >> $GITHUB_ENV
-          echo "GH_TOKEN=${{ secrets.FOP_RELEASE }}" >> $GITHUB_ENV
+          git config user.password "${{ secrets.GITHUB_TOKEN }}"
+          echo "GIT_USER=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+          echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
       - name: Find release version
         run: |
@@ -40,14 +41,7 @@ jobs:
           git checkout -b release/$version
           git add -A
           git commit -m "release version $version"
-          git push --force origin release/$version
-
-      - name: Merge back to master from release branch
-        run: |
-          git checkout master
-          git merge release/$version --commit -m "release version $version"
-          git push --force origin master
-          
+          git push --force origin release/$version          
 
       - name: Tag the release
         run: |
@@ -57,3 +51,29 @@ jobs:
       - name: Create a Github release from tag
         run: |
           gh release create v$version --verify-tag --notes "Release version $version" --draft
+
+      - name: Post release PR in master from release branch
+        run: |
+          git checkout release/$version
+          gh pr create --base master --title "post-release-update" --body "post-release-update" --reviewer funofprograming
+
+
+  Post-Release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.head_commit.message == 'post-release-update' }}
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event with commit message ${{ github.event.head_commit.message }}."
+      - name: Set up JDK 21 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Checkout branch master
+        uses: actions/checkout@v4
+        with:
+          ref: 'master'
+
+      - name: Post release PR in develop from master branch
+        run: gh pr create --base develop --title "post-release-update" --body "post-release-update" --reviewer funofprograming
