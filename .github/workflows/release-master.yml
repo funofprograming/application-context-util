@@ -3,7 +3,9 @@ run-name: Release from master
 
 on:
   push:
-    branch: master
+    branch:
+    - master
+    - github-actions
 
 jobs:
   Release:
@@ -30,36 +32,36 @@ jobs:
         with:
           ref: 'master'
 
-      - name: Find release version
-        run: |
-#          mvn build-helper:parse-version versions:set@release --settings settings.xml
-          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
-
-      - name: Prepare a release branch
-        run: |
-          git checkout -b release/$version
-          git add -A
-          git commit -m "release version $version"
-          git push --force origin release/$version
-
-      - name: Build and publish to maven central
-      - run: |
-          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
-
-      - name: Merge back to master from release branch
-      - run: |
-          git checkout master
-          git merge release/$version --commit
-          git push --force origin master
-          
-
-      - name: Tag the release
-        run: |
-          git tag -a v$version -m "release version $version"
-          git push --force origin v$version
-
-      - name: Create a Github release from tag
-      - run: |
-          gh release create v$version --verify-tag --notes "Release version $version"
+#      - name: Find release version
+#        run: |
+##          mvn build-helper:parse-version versions:set@release --settings settings.xml
+#          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
+#
+#      - name: Prepare a release branch
+#        run: |
+#          git checkout -b release/$version
+#          git add -A
+#          git commit -m "release version $version"
+#          git push --force origin release/$version
+#
+#      - name: Build and publish to maven central
+#      - run: |
+#          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
+#
+#      - name: Merge back to master from release branch
+#      - run: |
+#          git checkout master
+#          git merge release/$version --commit
+#          git push --force origin master
+#
+#
+#      - name: Tag the release
+#        run: |
+#          git tag -a v$version -m "release version $version"
+#          git push --force origin v$version
+#
+#      - name: Create a Github release from tag
+#      - run: |
+#          gh release create v$version --verify-tag --notes "Release version $version"
           
           
