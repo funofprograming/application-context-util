@@ -19,6 +19,12 @@ jobs:
           distribution: 'temurin'
           architecture: x64
 
+      - name: Checkout branch master
+        uses: actions/checkout@v4
+        with:
+          ref: 'master'
+          token: ${{ secrets.FOP_RELEASE }}
+
       - name: Git config setup
         run: |
           git config user.email "github-action@users.noreply.github.com"
@@ -26,11 +32,6 @@ jobs:
           git config user.password "${{ secrets.FOP_RELEASE }}"
           echo "GIT_USER=${{ github.actor }}:${{ secrets.FOP_RELEASE }}" >> $GITHUB_ENV
           echo "GH_TOKEN=${{ secrets.FOP_RELEASE }}" >> $GITHUB_ENV
-
-      - name: Checkout branch master
-        uses: actions/checkout@v4
-        with:
-          ref: 'master'
 
 #      - name: Find release version
 #        run: |
