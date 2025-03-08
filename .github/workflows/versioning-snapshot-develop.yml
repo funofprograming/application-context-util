@@ -1,0 +1,51 @@
+name: Version increment
+run-name: Versioning
+on:
+  workflow_dispatch:
+    inputs:
+      versionIncrementType:
+        description: Version to increment
+        options:
+          - patch
+          - minor
+          - major
+        required: true
+
+jobs:
+  Versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Starting to increment ${{ github.event.inputs.versionIncrementType }} version"
+      - name: Set up JDK 21 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Git config setup
+        run: |
+          git config user.email "github-action@users.noreply.github.com"
+          git config user.name "GitHub Action"
+          git config user.password "${{ secrets.GITHUB_TOKEN }}"
+          echo "GIT_USER=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+          echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Checkout branch develop
+        uses: actions/checkout@v4
+        with:
+          ref: 'develop'
+
+      - name: Increment version
+        run: | 
+          mvn build-helper:parse-version versions:set@${{ github.event.inputs.versionIncrementType }} --settings settings.xml
+          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
+
+      - name: Commit and create PR for branch develop
+        run: |
+          git checkout -b version/$version
+          git add -A
+          git commit -m "increment version $version"
+          git push --force origin version/$version
+          gh pr create --base develop --title "version increment by Github action" --body "version increment" --reviewer funofprograming
+

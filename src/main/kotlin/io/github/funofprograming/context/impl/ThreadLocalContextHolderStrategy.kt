@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ThreadContextElement
 import kotlinx.coroutines.asContextElement
 import kotlinx.coroutines.*
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.reflect.KClass
 
 class ThreadLocalContextHolderStrategy: AbstractApplicationContextHolderStrategy() {
@@ -53,7 +54,9 @@ class ThreadLocalContextHolderStrategy: AbstractApplicationContextHolderStrategy
     override fun <T : ApplicationContext> supportedApplicationContextType(): KClass<T> = ApplicationContext::class as KClass<T>
 
     /**
-     * Initialize a new CoroutineScope which can hold ApplicationContext for all coroutines that use this scope
+     * Initialize a new CoroutineScope which can hold ApplicationContext for all coroutines that use this scope.
+     *
+     * This is inheritable meaning if passed coroutineScope is already initialized with this ThreadLocal then that coroutineScope is not changed and returned as is.
      *
      * @param coroutineScope if any existing coroutineScope passed then a new coroutineScope is created from that param and init for holding ApplicationContext
      *
@@ -61,8 +64,18 @@ class ThreadLocalContextHolderStrategy: AbstractApplicationContextHolderStrategy
      */
     override suspend fun initCoroutineScope(coroutineScope: CoroutineScope?): CoroutineScope {
 
-        val threadLocal = LOCAL_CONTEXT_STORE.asContextElement(value = mutableMapOf())
-        return if(coroutineScope != null) CoroutineScope(coroutineScope.coroutineContext+threadLocal) else CoroutineScope(threadLocal)
-    }
+        var isContextInitialized = false
+        if(coroutineScope != null) {
+            withContext(coroutineScope.coroutineContext){
+                isContextInitialized = LOCAL_CONTEXT_STORE.isPresent()
+            }
+        }
 
+        if(!isContextInitialized){
+            val threadLocal = LOCAL_CONTEXT_STORE.asContextElement(value = mutableMapOf())
+            return if(coroutineScope != null) CoroutineScope(coroutineScope.coroutineContext+threadLocal) else CoroutineScope(threadLocal)
+        }
+
+        return coroutineScope ?: CoroutineScope(EmptyCoroutineContext)
+    }
 }
