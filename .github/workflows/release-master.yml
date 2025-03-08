@@ -48,12 +48,20 @@ jobs:
         run: |
           git checkout -b release/$version
           git add -A
+#          commit here but push once maven deploy success
           git commit -m "Release version $version"
-          git push --force origin release/$version
 
       - name: Build and publish to maven central
+        env:
+          FOP_SIGN_GPG_KEY: ${{ secrets.FOP_SIGN_GPG_KEY }}
+          FOP_SIGN_GPG_PASS: ${{ secrets.FOP_SIGN_GPG_PASS }}
         run: |
           mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
+
+      - name: Push the release branch
+        run: |
+#          push now since maven deploy success
+          git push --force origin release/$version
 
       - name: Tag the release
         run: |
