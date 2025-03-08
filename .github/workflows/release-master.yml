@@ -32,6 +32,7 @@ jobs:
 
       - name: Find release version
         run: |
+          mvn build-helper:parse-version versions:set@release --settings settings.xml
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
 
       - name: Prepare a release branch
