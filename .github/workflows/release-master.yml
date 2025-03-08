@@ -2,9 +2,9 @@ name: Release from master
 run-name: Release from master
 
 on:
-  workflow_dispatch:
   push:
-    branch: master
+    branches:
+      - master
 
 jobs:
   Release:
