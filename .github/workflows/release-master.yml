@@ -48,7 +48,6 @@ jobs:
         run: |
           git checkout -b release/$version
           git add -A
-#          commit here but push once maven deploy success
           git commit -m "Release version $version"
 
       - name: Build and publish to maven central
@@ -60,7 +59,6 @@ jobs:
 
       - name: Push the release branch
         run: |
-#          push now since maven deploy success
           git push --force origin release/$version
 
       - name: Tag the release
