@@ -37,9 +37,9 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
-      - name: Run the Maven build
-        env:
-          FOP_SIGN_GPG_KEY: ${{ secrets.FOP_SIGN_GPG_KEY }}
-          FOP_SIGN_GPG_PASS: ${{ secrets.FOP_SIGN_GPG_PASS }}
-        run: | 
-          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
+#      - name: Run the Maven build
+#        env:
+#          FOP_SIGN_GPG_KEY: ${{ secrets.FOP_SIGN_GPG_KEY }}
+#          FOP_SIGN_GPG_PASS: ${{ secrets.FOP_SIGN_GPG_PASS }}
+#        run: |
+#          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
