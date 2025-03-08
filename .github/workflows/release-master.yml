@@ -2,9 +2,9 @@ name: Release from master
 run-name: Release from master
 
 on:
-  workflow_dispatch:
   push:
-    branch: master
+    branches:
+      - master
 
 jobs:
   Release:
@@ -50,6 +50,10 @@ jobs:
           git add -A
           git commit -m "Release version $version"
           git push --force origin release/$version
+
+      - name: Build and publish to maven central
+        run: |
+          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
 
       - name: Tag the release
         run: |
