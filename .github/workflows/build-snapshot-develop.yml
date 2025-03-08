@@ -23,6 +23,13 @@ jobs:
         with:
           ref: 'develop'
 
+      - name: Find build version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
+
+      - name: Verify if SNAPSHOT version
+        run: |
+          [[ $version == *-SNAPSHOT ]] || { echo -e "\033[0;31m" "Cannot build a non SNAPSHOT version on develop branch. Please run Versioning action first."; exit 1; }
+
       - name: Fetch cache
         uses: actions/cache@v4
         with:
@@ -34,4 +41,5 @@ jobs:
         env:
           FOP_SIGN_GPG_KEY: ${{ secrets.FOP_SIGN_GPG_KEY }}
           FOP_SIGN_GPG_PASS: ${{ secrets.FOP_SIGN_GPG_PASS }}
-        run: mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
+        run: | 
+          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci

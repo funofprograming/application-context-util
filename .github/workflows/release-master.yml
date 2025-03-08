@@ -2,6 +2,7 @@ name: Release from master
 run-name: Release from master
 
 on:
+  workflow_dispatch:
   push:
     branch: master
 
@@ -40,17 +41,17 @@ jobs:
         run: |
           git checkout -b release/$version
           git add -A
-          git commit -m "release version $version"
-          git push --force origin release/$version          
+          git commit -m "Release version $version"
+          git push --force origin release/$version
 
       - name: Tag the release
         run: |
-          git tag -a v$version -m "release version $version"
+          git tag -a v$version -m "Release version $version"
           git push --force origin v$version
 
       - name: Create a Github release from tag
         run: |
-          gh release create v$version --verify-tag --notes "Release version $version" --draft
+          gh release create v$version --verify-tag --title "Release version $version" --notes "Release version $version" --draft
 
       - name: Post release PR in master from release branch
         run: |
