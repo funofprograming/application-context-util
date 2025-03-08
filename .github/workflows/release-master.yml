@@ -24,6 +24,13 @@ jobs:
         with:
           ref: 'master'
 
+      - name: Fetch cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
       - name: Git config setup
         run: |
           git config user.email "github-action@users.noreply.github.com"
