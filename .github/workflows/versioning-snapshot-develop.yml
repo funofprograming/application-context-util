@@ -38,14 +38,14 @@ jobs:
 
       - name: Increment version
         run: | 
-          mvn build-helper:parse-version versions:set@${{ github.event.inputs.versionIncrementType }} --settings settings.xml
+          mvn build-helper:parse-version versions:set@${{ github.event.inputs.versionIncrementType }} --settings settings.xml --activate-profiles ci
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
 
       - name: Commit and create PR for branch develop
         run: |
           git checkout -b version/$version
           git add -A
-          git commit -m "increment version $version"
+          git commit -m "Increment version $version"
           git push --force origin version/$version
-          gh pr create --base develop --title "version increment by Github action" --body "version increment" --reviewer funofprograming
+          gh pr create --base develop --title "Version increment by Github action" --body "Version increment to $version" --reviewer funofprograming
 
