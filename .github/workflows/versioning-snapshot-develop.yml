@@ -38,7 +38,7 @@ jobs:
 
       - name: Increment version
         run: | 
-          mvn build-helper:parse-version versions:set@${{ github.event.inputs.versionIncrementType }} --settings settings.xml
+          mvn build-helper:parse-version versions:set@${{ github.event.inputs.versionIncrementType }} --settings settings.xml --activate-profiles ci
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_ENV"
 
       - name: Commit and create PR for branch develop
