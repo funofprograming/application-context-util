@@ -15,9 +15,10 @@ class TestGlobalApplicationContext {
 
     private var contextName: String = "TestGlobalApplicationContext"
     private var cloneContextName: String = "TestCloneGlobalApplicationContext"
-    private var validKey: Key<String> = Key.of("ValidKey", String::class.java)
-    private var invalidKey: Key<String> = Key.of("InvalidKey", String::class.java)
-    private var permittedKeys: Set<Key<*>> = setOf(validKey)
+    private var validKey1: Key<String> = Key.of<String>("ValidKey1")
+    private var validKey2: Key<List<String>> = Key.of<List<String>>("ValidKey2")
+    private var invalidKey: Key<String> = Key.of<String>("InvalidKey")
+    private var permittedKeys: Set<Key<*>> = setOf(validKey1, validKey2)
 
     @AfterEach
     fun tearDown() {
@@ -26,22 +27,29 @@ class TestGlobalApplicationContext {
 
     @Test
     fun testGetGlobalContext() = runBlocking {
-        val valueSetInThread1 = "Value T1"
+        val valueSetInThread11 = "Value T1"
+        val valueSetInThread12 = listOf("Value T11", "Value T12")
 
         val def1 = launch {
             val globalContext = getGlobalContext(contextName)
-            globalContext?.add(validKey, valueSetInThread1)
+            globalContext?.add(validKey1, valueSetInThread11)
+            globalContext?.add(validKey2, valueSetInThread12)
         }
 
         delay(1000)
 
         val def2 = async {
             val globalContext = getGlobalContext(contextName)
-            return@async globalContext?.fetch(validKey)
+            return@async globalContext?.fetch(validKey1)
         }
 
+        val def3 = async {
+            val globalContext = getGlobalContext(contextName)
+            return@async globalContext?.fetch(validKey2)
+        }
 
-        assertEquals(valueSetInThread1, def2.await())
+        assertEquals(valueSetInThread11, def2.await())
+        assertEquals(valueSetInThread12, def3.await())
     }
 
     @Test
@@ -52,7 +60,7 @@ class TestGlobalApplicationContext {
 
         launch {
             val globalContext = getGlobalContext(contextName, permittedKeys)
-            globalContext?.add(validKey, valueSetInThread1)
+            globalContext?.add(validKey1, valueSetInThread1)
         }
 
         delay(1000)
@@ -74,7 +82,7 @@ class TestGlobalApplicationContext {
 
         launch {
             val globalContext = getGlobalContext(contextName, permittedKeys)
-            globalContext?.add(validKey, valueSetInThread1)
+            globalContext?.add(validKey1, valueSetInThread1)
         }
 
         delay(1000)
@@ -93,12 +101,14 @@ class TestGlobalApplicationContext {
     @Throws(Throwable::class)
     fun testSetGlobalContext(): Unit = runBlocking {
 
-        val valueSetInThread1 = "Value T1"
+        val valueSetInThread11 = "Value T1"
+        val valueSetInThread12 = listOf("Value T11", "Value T12")
 
         launch {
             val globalContext: ApplicationContext = ConcurrentApplicationContextImpl(contextName)
             setGlobalContext(globalContext)
-            globalContext.add(validKey, valueSetInThread1)
+            globalContext.add(validKey1, valueSetInThread11)
+            globalContext.add(validKey2, valueSetInThread12)
         }
 
         delay(1000)
@@ -106,23 +116,32 @@ class TestGlobalApplicationContext {
         val def2 = async {
 
             val globalContext = getGlobalContext(contextName)
-            return@async globalContext?.fetch(validKey)
+            return@async globalContext?.fetch(validKey1)
+        }
+
+        val def3 = async {
+
+            val globalContext = getGlobalContext(contextName)
+            return@async globalContext?.fetch(validKey2)
         }
 
         delay(1000)
-        assertEquals(valueSetInThread1, def2.await())
+        assertEquals(valueSetInThread11, def2.await())
+        assertEquals(valueSetInThread12, def3.await())
     }
 
     @Test
     @Throws(Throwable::class)
     fun testClearGlobalContext(): Unit = runBlocking {
 
-        val valueSetInThread1 = "Value T1"
+        val valueSetInThread11 = "Value T1"
+        val valueSetInThread12 = listOf("Value T11", "Value T12")
 
         launch {
             val globalContext: ApplicationContext = ConcurrentApplicationContextImpl(contextName)
             setGlobalContext(globalContext)
-            globalContext.add(validKey, valueSetInThread1)
+            globalContext.add(validKey1, valueSetInThread11)
+            globalContext.add(validKey2, valueSetInThread12)
         }
 
         delay(1000)
@@ -136,27 +155,39 @@ class TestGlobalApplicationContext {
         val def2 = async {
 
             val globalContext = getGlobalContext(contextName)
-            return@async globalContext?.fetch(validKey)
+            return@async globalContext?.fetch(validKey1)
+        }
+
+        val def3 = async {
+
+            val globalContext = getGlobalContext(contextName)
+            return@async globalContext?.fetch(validKey2)
         }
 
         delay(1000)
         assertNull(def2.await())
+        assertNull(def3.await())
     }
 
     @Test
     @Throws(InterruptedException::class, ExecutionException::class)
     fun testCloneGlobalContext() {
-        val valueSetInThread1 = "Value T1"
+        val valueSetInThread11 = "Value T1"
+        val valueSetInThread12 = listOf("Value T11", "Value T12")
         var globalContext = getGlobalContext(contextName)
-        globalContext?.add(validKey, valueSetInThread1)
+        globalContext?.add(validKey1, valueSetInThread11)
+        globalContext?.add(validKey2, valueSetInThread12)
         var globalContextClone = globalContext?.clone(cloneContextName)
-        assertEquals(valueSetInThread1, globalContextClone?.fetch(validKey))
+        assertEquals(valueSetInThread11, globalContextClone?.fetch(validKey1))
+        assertEquals(valueSetInThread12, globalContextClone?.fetch(validKey2))
         clearGlobalContext(contextName)
 
         globalContext = getGlobalContext(contextName, permittedKeys)
-        globalContext?.add(validKey, valueSetInThread1)
+        globalContext?.add(validKey1, valueSetInThread11)
+        globalContext?.add(validKey2, valueSetInThread12)
         globalContextClone = globalContext?.clone(cloneContextName, permittedKeys)
-        assertEquals(valueSetInThread1, globalContextClone?.fetch(validKey))
+        assertEquals(valueSetInThread11, globalContextClone?.fetch(validKey1))
+        assertEquals(valueSetInThread12, globalContextClone?.fetch(validKey2))
     }
 
 }

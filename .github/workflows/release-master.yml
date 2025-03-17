@@ -73,7 +73,7 @@ jobs:
       - name: Post release PR in master from release branch
         run: |
           git checkout release/$version
-          gh pr create --base master --title "post-release-update" --reviewer funofprograming
+          gh pr create --base master --title "post-release-update" --body "post-release-update. Created by Github Action." --reviewer funofprograming
 
 
   Post-Release:
@@ -94,4 +94,4 @@ jobs:
           ref: 'master'
 
       - name: Post release PR in develop from master branch
-        run: gh pr create --base develop --title "post-release-update" --reviewer funofprograming
+        run: gh pr create --base develop --title "post-release-update" --body "post-release-update. Created by Github Action." --reviewer funofprograming
