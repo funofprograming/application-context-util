@@ -81,5 +81,9 @@ abstract class KeyType<T> {
         fun <T> of(type: Type): KeyType<T> {
             return object : KeyType<T>(type) {}
         }
+
+        inline fun <reified T> of(): KeyType<T> {
+            return object : KeyType<T>() {}
+        }
     }
 }

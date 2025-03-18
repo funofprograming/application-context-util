@@ -2,14 +2,14 @@ name: Release from master
 run-name: Release from master
 
 on:
-  workflow_dispatch:
   push:
-    branch: master
+    branches:
+      - master
 
 jobs:
   Release:
     runs-on: ubuntu-latest
-    if: ${{ github.event.head_commit.message != 'post-release-update' }}
+    if: ${{ !contains(github.event.head_commit.message, 'post-release-update') }}
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event with commit message ${{ github.event.head_commit.message }}."
       - name: Set up JDK 21 for x64
@@ -49,6 +49,16 @@ jobs:
           git checkout -b release/$version
           git add -A
           git commit -m "Release version $version"
+
+      - name: Build and publish to maven central
+        env:
+          FOP_SIGN_GPG_KEY: ${{ secrets.FOP_SIGN_GPG_KEY }}
+          FOP_SIGN_GPG_PASS: ${{ secrets.FOP_SIGN_GPG_PASS }}
+        run: |
+          mvn clean deploy --file pom.xml --batch-mode --settings settings.xml --activate-profiles ci
+
+      - name: Push the release branch
+        run: |
           git push --force origin release/$version
 
       - name: Tag the release
@@ -63,12 +73,12 @@ jobs:
       - name: Post release PR in master from release branch
         run: |
           git checkout release/$version
-          gh pr create --base master --title "post-release-update" --body "post-release-update" --reviewer funofprograming
+          gh pr create --base master --title "post-release-update" --body "post-release-update. Created by Github Action." --reviewer funofprograming
 
 
   Post-Release:
     runs-on: ubuntu-latest
-    if: ${{ github.event.head_commit.message == 'post-release-update' }}
+    if: ${{ contains(github.event.head_commit.message, 'post-release-update') }}
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event with commit message ${{ github.event.head_commit.message }}."
       - name: Set up JDK 21 for x64
@@ -84,4 +94,4 @@ jobs:
           ref: 'master'
 
       - name: Post release PR in develop from master branch
-        run: gh pr create --base develop --title "post-release-update" --body "post-release-update" --reviewer funofprograming
+        run: gh pr create --base develop --title "post-release-update" --body "post-release-update. Created by Github Action." --reviewer funofprograming

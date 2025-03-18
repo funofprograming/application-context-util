@@ -47,5 +47,5 @@ jobs:
           git add -A
           git commit -m "Increment version $version"
           git push --force origin version/$version
-          gh pr create --base develop --title "Version increment by Github action" --body "Version increment to $version" --reviewer funofprograming
+          gh pr create --base develop --title "Version increment to $version" --body "Version increment to $version. Created by Github Action." --reviewer funofprograming
 

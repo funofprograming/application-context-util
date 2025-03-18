@@ -29,7 +29,8 @@ data class Key<T> (val keyName: String, val valueType: KeyType<T>) {
     }
 
     companion object {
-        fun <T> of(keyName: String, valueType: KeyType<T>):Key<T> = Key<T>(keyName, valueType)
-        fun <T> of(keyName: String, valueType: Class<T>):Key<T> = Key<T>(keyName, KeyType.of(valueType))
+        inline fun <reified T> of(keyName: String):Key<T> = Key<T>(keyName, KeyType.of<T>())
+        fun <T> of(keyName: String, valueType: KeyType<T>):Key<T> = Key<T>(keyName, valueType) //needed for Java compatibility since inline functions don't work in Java
+        fun <T> of(keyName: String, valueType: Class<T>):Key<T> = Key<T>(keyName, KeyType.of(valueType)) //needed for Java compatibility since inline functions don't work in Java
     }
 }
